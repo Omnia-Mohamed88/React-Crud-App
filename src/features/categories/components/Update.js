@@ -1,36 +1,28 @@
-// src/features/categories/components/Update.js
-import React, { useEffect, useState } from 'react';
-import CreateForm from '../forms/CreateForm';
-import createCategorySchema from '../schema/createCategorySchema';
-import { useParams, useNavigate } from 'react-router-dom';
-import { updateCategory, getCategoryById } from '../../../services/categoryService';
+import React from 'react';
+import ReusableModal from '../../../components/ReusableModal';
+import UpdateForm from '../forms/UpdateForm';
+import { updateCategory } from '../../../services/categoryServices'; // Adjust path if needed
 
-const Update = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [category, setCategory] = useState(null);
+const Update = ({ open, onClose, category, onUpdate }) => {
 
-  useEffect(() => {
-    const fetchCategory = async () => {
-      const data = await getCategoryById(id);
-      setCategory(data);
-    };
-    fetchCategory();
-  }, [id]);
-
-  const handleSubmit = async (values) => {
-    await updateCategory(id, values);
-    navigate('/categories');
+  const handleUpdate = async (values) => {
+    try {
+      await updateCategory(category.id, values);
+      onUpdate(); // Refresh categories list
+      onClose(); // Close the modal
+    } catch (error) {
+      console.error('Failed to update category:', error);
+    }
   };
 
-  if (!category) return <div>Loading...</div>;
-
   return (
-    <CreateForm
-      initialValues={category}
-      validationSchema={createCategorySchema}
-      onSubmit={handleSubmit}
-    />
+    <ReusableModal
+      open={open}
+      onClose={onClose}
+      title="Update Category"
+    >
+      <UpdateForm category={category} onSubmit={handleUpdate} />
+    </ReusableModal>
   );
 };
 

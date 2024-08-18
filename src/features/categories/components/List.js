@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { getCategories, deleteCategory } from '../../../services/categoryServices'; // Adjust path if needed
+import { getCategories, deleteCategory, getCategoryById } from '../../../services/categoryServices'; // Adjust path if needed
 import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import Update from './Update'; // Adjust path if needed
 
 const List = () => {
   const [categories, setCategories] = useState([]);
-  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -34,8 +35,24 @@ const List = () => {
     }
   };
 
-  const handleUpdate = (id) => {
-    navigate(`/categories/update/${id}`);
+  const handleUpdate = async (id) => {
+    try {
+      const category = await getCategoryById(id);
+      setSelectedCategory(category);
+      setModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching category:', error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedCategory(null);
+  };
+
+  const handleCategoryUpdate = () => {
+    setCategories(categories.map(cat => cat.id === selectedCategory.id ? selectedCategory : cat));
+    handleCloseModal();
   };
 
   return (
@@ -47,6 +64,14 @@ const List = () => {
           onEdit={handleUpdate}
           onDelete={handleDelete}
         />
+        {modalOpen && selectedCategory && (
+          <Update
+            open={modalOpen}
+            onClose={handleCloseModal}
+            category={selectedCategory}
+            onUpdate={handleCategoryUpdate}
+          />
+        )}
       </Paper>
     </Container>
   );
