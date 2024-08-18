@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
   return (
@@ -14,12 +14,11 @@ const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
         </TableHead>
         <TableBody>
           {rows.length > 0 ? (
-            rows.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Typography variant="h6">{row.title}</Typography>
-                  <Typography variant="body2">ID: {row.id}</Typography>
-                </TableCell>
+            rows.map((row) => (
+              <TableRow key={row.id}>
+                {headers.slice(0, -1).map((header, index) => (
+                  <TableCell key={index}>{row[header.toLowerCase()] || '-'}</TableCell>
+                ))}
                 <TableCell>
                   {onEdit && (
                     <Button variant="contained" color="primary" onClick={() => onEdit(row.id)}>

@@ -1,19 +1,20 @@
 const API_URL = 'http://localhost:8000/api/categories'; // Replace with your API URL
 
 export const getCategories = async () => {
-  try {
-    const response = await fetch(API_URL);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log('Fetched categories:', result); // Log the entire result
+      return result.data || []; // Ensure it returns an array
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+      return []; // Return an empty array in case of an error
     }
-    const result = await response.json();
-    console.log('Fetched categories:', result.data); // Log the data to check its structure
-    return result.data; // Return the array from the "data" property
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
-    throw error;
-  }
-};
+  };
+  
 
 // No other changes needed here
 export const createCategory = async (category) => {
