@@ -1,25 +1,33 @@
-// src/features/categories/components/Create.js
-import React from 'react';
+import React, { useState } from 'react';
+import { Container, Paper, Typography } from '@mui/material';
 import CreateForm from '../forms/CreateForm';
-import createCategorySchema from '../schema/createCategorySchema';
-import { useNavigate } from 'react-router-dom';
 import { createCategory } from '../../../services/categoryServices';
 
-const Create = () => {
-  const navigate = useNavigate();
+const CreateCategory = () => {
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = async (values) => {
-    await createCategory(values);
-    navigate('/categories');
+  const handleCreateCategory = async (category) => {
+    try {
+      await createCategory(category);
+      setSuccess('Category created successfully!');
+      setError('');
+      // Optionally, redirect or reset form here
+    } catch (err) {
+      setError('Failed to create category. Please try again.');
+      setSuccess('');
+    }
   };
 
   return (
-    <CreateForm
-      initialValues={{ name: '' }}
-      validationSchema={createCategorySchema}
-      onSubmit={handleSubmit}
-    />
+    <Container component="main" maxWidth="xs">
+      <Paper elevation={3} style={{ padding: '16px' }}>
+        <Typography variant="h5">Create Category</Typography>
+        {success && <Typography color="primary">{success}</Typography>}
+        <CreateForm onSubmit={handleCreateCategory} error={error} />
+      </Paper>
+    </Container>
   );
 };
 
-export default Create;
+export default CreateCategory;

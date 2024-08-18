@@ -4,7 +4,6 @@ import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-
 const List = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();

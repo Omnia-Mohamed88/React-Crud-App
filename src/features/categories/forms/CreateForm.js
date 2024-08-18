@@ -1,36 +1,45 @@
-// src/features/categories/forms/CreateForm.js
 import React from 'react';
-import { Formik, Form, Field } from 'formik';
-import { TextField, Button, Container, Paper } from '@mui/material';
+import { useFormik } from 'formik';
+import { TextField, Button, Typography } from '@mui/material';
+import { createCategorySchema } from '../schema/createCategorySchema';
 
-const CreateForm = ({ initialValues, validationSchema, onSubmit }) => (
-  <Container component="main" maxWidth="xs">
-    <Paper elevation={3} style={{ padding: '16px' }}>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        {({ errors, touched }) => (
-          <Form>
-            <Field
-              as={TextField}
-              name="name"
-              label="Category Name"
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              error={touched.name && Boolean(errors.name)}
-              helperText={touched.name && errors.name}
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Create Category
-            </Button>
-          </Form>
-        )}
-      </Formik>
-    </Paper>
-  </Container>
-);
+const CreateForm = ({ onSubmit, error }) => {
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+    },
+    validationSchema: createCategorySchema,
+    onSubmit: (values) => {
+      if (typeof onSubmit === 'function') {
+        onSubmit(values);
+      } else {
+        console.error('onSubmit is not a function');
+      }
+    },
+  });
+
+  return (
+    <form onSubmit={formik.handleSubmit} noValidate>
+      {error && <Typography color="error">{error}</Typography>}
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        id="title"
+        label="Category Title"
+        name="title"
+        autoComplete="title"
+        value={formik.values.title}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.title && Boolean(formik.errors.title)}
+        helperText={formik.touched.title && formik.errors.title}
+      />
+      <Button type="submit" fullWidth variant="contained" color="primary">
+        Create Category
+      </Button>
+    </form>
+  );
+};
 
 export default CreateForm;
