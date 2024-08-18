@@ -2,7 +2,9 @@
 import * as Yup from 'yup';
 
 const updateCategorySchema = Yup.object({
-  name: Yup.string().required('Category name is required'),
-});
+    title: Yup.string()
+    .required('Title is required')
+    .min(2, 'Title must be at least 2 characters long')
+    .max(50, 'Title must be at most 50 characters long'),});
 
 export default updateCategorySchema;

@@ -1,16 +1,14 @@
 import React from 'react';
 import { TextField, Button } from '@mui/material';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import updateCategorySchema from '../schema/updateCategorySchema';
 
 const UpdateForm = ({ category, onSubmit }) => {
   const formik = useFormik({
     initialValues: {
       title: category.title || '',
     },
-    validationSchema: Yup.object({
-      title: Yup.string().required('Title is required'),
-    }),
+    validationSchema: updateCategorySchema, 
     onSubmit: (values) => {
       onSubmit(values);
     },

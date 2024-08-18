@@ -1,15 +1,14 @@
 import React from 'react';
 import ReusableModal from '../../../components/ReusableModal';
 import UpdateForm from '../forms/UpdateForm';
-import { updateCategory } from '../../../services/categoryServices'; // Adjust path if needed
+import { updateCategory } from '../../../services/categoryServices'; 
 
 const Update = ({ open, onClose, category, onUpdate }) => {
-
   const handleUpdate = async (values) => {
     try {
       await updateCategory(category.id, values);
-      onUpdate(); // Refresh categories list
-      onClose(); // Close the modal
+      onUpdate(); 
+      onClose(); 
     } catch (error) {
       console.error('Failed to update category:', error);
     }

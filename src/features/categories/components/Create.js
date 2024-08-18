@@ -12,7 +12,6 @@ const CreateCategory = () => {
       await createCategory(category);
       setSuccess('Category created successfully!');
       setError('');
-      // Optionally, redirect or reset form here
     } catch (err) {
       setError('Failed to create category. Please try again.');
       setSuccess('');
