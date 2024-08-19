@@ -5,6 +5,7 @@ import Create from './features/categories/pages/Create';
 import Update from './features/categories/pages/Update';
 import List from './features/categories/pages/List';
 import Home from './pages/Home'
+import ListProductPage from './features/products/pages/ListProductPage'
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
         <Route path="/categories/create" element={<Create />} />
         <Route path="/categories/update/:id" element={<Update />} />
         <Route path="/home" element={<Home />}/>
+        <Route path="/products" element={<ListProductPage />}/>
+
+
       </Routes>
     </Router>
   );

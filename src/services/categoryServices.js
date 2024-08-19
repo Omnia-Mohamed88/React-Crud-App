@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/categories';
+// const API_URL = 'http://localhost:8000/api/categories';
+
+const API_URL = process.env.REACT_APP_API_URL + '/categories';
+
 
 // Fetch all categories
 // export const getCategories = async () => {

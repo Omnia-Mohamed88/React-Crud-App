@@ -1,4 +1,3 @@
-// src/components/ReusableTable.js
 import React from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
@@ -20,12 +19,8 @@ const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
                 {headers.slice(0, -1).map((header, index) => (
                   <TableCell key={index}>
                     {header.toLowerCase() === 'image' ? (
-                      row.attachments.length > 0 ? (
-                        <img 
-                          src={row.attachments[0].file_path}
-                          alt={row.title}
-                          style={{ width: '100px', height: '50px' }}
-                        />
+                      row.image ? (
+                        row.image
                       ) : (
                         <span>No image</span>
                       )
