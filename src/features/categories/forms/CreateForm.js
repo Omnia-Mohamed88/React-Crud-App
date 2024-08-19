@@ -17,7 +17,6 @@ const CreateForm = ({ onSubmit, error }) => {
       }
     },
   });
-
   return (
     <form onSubmit={formik.handleSubmit} noValidate>
       {error && <Typography color="error">{error}</Typography>}
