@@ -1,3 +1,4 @@
+// src/components/ReusableTable.js
 import React from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
@@ -16,8 +17,22 @@ const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
           {rows.length > 0 ? (
             rows.map((row) => (
               <TableRow key={row.id}>
-                {headers.slice(0, -1).map((header, index) => ( // this way to execlude the action column
-                  <TableCell key={index}>{row[header.toLowerCase()] || '-'}</TableCell>  // to ensure that the header matches the index
+                {headers.slice(0, -1).map((header, index) => (
+                  <TableCell key={index}>
+                    {header.toLowerCase() === 'image' ? (
+                      row.attachments.length > 0 ? (
+                        <img 
+                          src={row.attachments[0].file_path}
+                          alt={row.title}
+                          style={{ width: '100px', height: '50px' }}
+                        />
+                      ) : (
+                        <span>No image</span>
+                      )
+                    ) : (
+                      row[header.toLowerCase()] || '-'
+                    )}
+                  </TableCell>
                 ))}
                 <TableCell>
                   {onEdit && (

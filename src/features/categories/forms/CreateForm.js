@@ -1,25 +1,38 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Typography } from '@mui/material';
+import { TextField, Button, Typography, Input } from '@mui/material';
 import { createCategorySchema } from '../schema/createCategorySchema';
 
 const CreateForm = ({ onSubmit, error }) => {
   const formik = useFormik({
     initialValues: {
       title: '',
+      images: [], // Updated to handle multiple files
     },
     validationSchema: createCategorySchema,
     onSubmit: (values) => {
+      const formValues = {
+        title: values.title,
+        images: values.images,
+      };
       if (typeof onSubmit === 'function') {
-        onSubmit(values);
+        onSubmit(formValues);
       } else {
         console.error('onSubmit is not a function');
       }
     },
   });
+
+  const handleFileChange = (event) => {
+    // Convert FileList to array
+    const files = Array.from(event.currentTarget.files);
+    formik.setFieldValue('images', files);
+  };
+
   return (
     <form onSubmit={formik.handleSubmit} noValidate>
       {error && <Typography color="error">{error}</Typography>}
+      
       <TextField
         margin="normal"
         required
@@ -34,6 +47,15 @@ const CreateForm = ({ onSubmit, error }) => {
         error={formik.touched.title && Boolean(formik.errors.title)}
         helperText={formik.touched.title && formik.errors.title}
       />
+      
+      <Input
+        type="file"
+        id="images"
+        name="images"
+        onChange={handleFileChange}
+        inputProps={{ accept: 'image/*', multiple: true }} // Allow multiple files
+      />
+      
       <Button type="submit" fullWidth variant="contained" color="primary">
         Create Category
       </Button>

@@ -1,9 +1,11 @@
+// src/pages/CategoryListPage.js
 import React, { useEffect, useState } from 'react';
 import { getCategories, deleteCategory, getCategoryById } from '../../../services/categoryServices'; 
 import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import Update from './Update'; 
 import ConfirmationModal from '../../../components/ConfirmationModal'; 
+
 const List = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -75,7 +77,7 @@ const List = () => {
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: '16px' }}>
         <ReusableTable
-          headers={['ID', 'Title', 'Actions']}
+          headers={['ID', 'Title', 'Image', 'Actions']} // Added 'Image' header
           rows={categories}
           onEdit={handleUpdate}
           onDelete={handleOpenConfirmation} 

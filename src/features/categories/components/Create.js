@@ -7,7 +7,7 @@ const CreateCategory = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleCreateCategory = async (category) => {
+  const handleCreateCategory = async (category) => { // function we call after submit
     try {
       await createCategory(category);
       setSuccess('Category created successfully!');

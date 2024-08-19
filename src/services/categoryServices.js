@@ -17,26 +17,58 @@ export const getCategories = async () => {
 };
 
 // Create a new category
+// export const createCategory = async (category) => {
+//   try {
+//     const response = await fetch(API_URL, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(category),
+//     });
+
+//     if (!response.ok) {
+//       const errorResponse = await response.text(); 
+//       console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
+//       throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
+//     }
+
+//     return response.json();
+//   } catch (error) {
+//     console.error('Failed to create category:', error.message);
+//     throw error;
+//   }
+// };
+
 export const createCategory = async (category) => {
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(category),
-    });
-
-    if (!response.ok) {
-      const errorResponse = await response.text(); 
-      console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
-      throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
+    try {
+      const formData = new FormData();
+      formData.append('title', category.title);
+  
+      // Append multiple files if they exist
+      if (category.images && category.images.length > 0) {
+        for (let i = 0; i < category.images.length; i++) {
+          formData.append('attachments[]', category.images[i]);
+        }
+      }
+  
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.text();
+        console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
+        throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
+      }
+  
+      return response.json();
+    } catch (error) {
+      console.error('Failed to create category:', error.message);
+      throw error;
     }
-
-    return response.json();
-  } catch (error) {
-    console.error('Failed to create category:', error.message);
-    throw error;
-  }
-};
+  };
+  
+  
 
 // Update an existing category by ID
 export const updateCategory = async (id, category) => {

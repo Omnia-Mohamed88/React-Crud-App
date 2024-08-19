@@ -13,7 +13,6 @@ const Update = ({ open, onClose, category, onUpdate }) => {
       console.error('Failed to update category:', error);
     }
   };
-
   return (
     <ReusableModal
       open={open}
