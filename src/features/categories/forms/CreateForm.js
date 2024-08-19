@@ -44,7 +44,7 @@ const CreateForm = ({ onSubmit, error }) => {
         value={formik.values.title}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.title && Boolean(formik.errors.title)}
+        error={formik.touched.title && (formik.errors.title)}
         helperText={formik.touched.title && formik.errors.title}
       />
       

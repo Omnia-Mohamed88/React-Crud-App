@@ -1,37 +1,36 @@
-// src/pages/CategoryListPage.js
 import React, { useEffect, useState } from 'react';
 import { getCategories, deleteCategory, getCategoryById } from '../../../services/categoryServices'; 
 import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import Update from './Update'; 
-import ConfirmationModal from '../../../components/ConfirmationModal'; 
+import ConfirmationModal from '../../../components/ConfirmationModal';
+import PaginationComponent from '../../../components/PaginationComponent'; // Import the pagination component
 
 const List = () => {
   const [categories, setCategories] = useState([]);
+  const [meta, setMeta] = useState({}); // State to store pagination meta
+  const [page, setPage] = useState(1); // State to manage the current page
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false); 
   const [categoryToDelete, setCategoryToDelete] = useState(null); 
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (page) => {
     try {
-      const data = await getCategories();
-      if (Array.isArray(data)) {
-        setCategories(data);
-      } else {
-        console.error('Expected an array, but received:', data);
-      }
+      const response = await getCategories(page);
+      setCategories(response.data);
+      setMeta(response.meta); // Store the pagination meta data
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    fetchCategories(page);
+  }, [page]);
 
   const handleCategoryUpdate = async () => {
-    await fetchCategories(); 
+    await fetchCategories(page); 
     handleCloseUpdateModal(); 
   };
 
@@ -39,7 +38,7 @@ const List = () => {
     try {
       if (categoryToDelete !== null) {
         await deleteCategory(categoryToDelete);
-        fetchCategories(); 
+        fetchCategories(page); 
         setConfirmationOpen(false);
         setCategoryToDelete(null);
       }
@@ -73,11 +72,15 @@ const List = () => {
     setCategoryToDelete(null);
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage); // Update the current page state
+  };
+
   return (
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: '16px' }}>
         <ReusableTable
-          headers={['ID', 'Title', 'Image', 'Actions']} // Added 'Image' header
+          headers={['ID', 'Title', 'Image', 'Actions']}
           rows={categories}
           onEdit={handleUpdate}
           onDelete={handleOpenConfirmation} 
@@ -97,6 +100,7 @@ const List = () => {
           title="Confirm Deletion"
           message="Are you sure you want to delete this category?"
         />
+        <PaginationComponent meta={meta} onPageChange={handlePageChange} /> {/* Add Pagination Component */}
       </Paper>
     </Container>
   );

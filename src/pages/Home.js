@@ -10,8 +10,9 @@ const Home = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories();
-        setCategories(data);
+        const response = await getCategories();
+        console.log('Fetched data:', response);
+        setCategories(response.data); 
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -23,13 +24,11 @@ const Home = () => {
   return (
     <Container>
       <Grid container spacing={3}>
-        {categories.map((category) => (
+        {Array.isArray(categories) && categories.map((category) => (
           <Grid item xs={12} sm={6} md={4} key={category.id}>
             <ReusableCard
               title={category.title}
-              description={category.description}
-              onEdit={() => console.log(`Edit ${category.id}`)}
-              onDelete={() => console.log(`Delete ${category.id}`)}
+              image={category.attachments.length > 0 ? category.attachments[0].file_path : null}
             />
           </Grid>
         ))}
