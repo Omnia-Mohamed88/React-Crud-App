@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { getCategoryById } from '../../../services/categoryServices'; // Ensure this function exists
+import { getCategoryById } from '../../../services/categoryServices'; 
 import Update from '../components/Update';
 
 const UpdateCategoryPage = () => {
@@ -10,7 +10,7 @@ const UpdateCategoryPage = () => {
   React.useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const data = await getCategoryById(id); // Fetch category by ID
+        const data = await getCategoryById(id); 
         setCategory(data);
       } catch (error) {
         console.error('Error fetching category:', error);

@@ -16,8 +16,8 @@ const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
           {rows.length > 0 ? (
             rows.map((row) => (
               <TableRow key={row.id}>
-                {headers.slice(0, -1).map((header, index) => (
-                  <TableCell key={index}>{row[header.toLowerCase()] || '-'}</TableCell>
+                {headers.slice(0, -1).map((header, index) => ( // this way to execlude the action column
+                  <TableCell key={index}>{row[header.toLowerCase()] || '-'}</TableCell>  // to ensure that the header matches the index
                 ))}
                 <TableCell>
                   {onEdit && (

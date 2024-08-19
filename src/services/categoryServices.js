@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000/api/categories'; // Replace with your API URL
+const API_URL = 'http://localhost:8000/api/categories'; 
 
 // Fetch all categories
 export const getCategories = async () => {
@@ -8,11 +8,11 @@ export const getCategories = async () => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const result = await response.json();
-    console.log('Fetched categories:', result); // Log the entire result
-    return result.data || []; // Ensure it returns an array
+    console.log('Fetched categories:', result); 
+    return result.data || []; 
   } catch (error) {
     console.error('Failed to fetch categories:', error);
-    return []; // Return an empty array in case of an error
+    return []; 
   }
 };
 
@@ -26,8 +26,7 @@ export const createCategory = async (category) => {
     });
 
     if (!response.ok) {
-      // Attempt to parse the response body for more error details
-      const errorResponse = await response.text(); // or response.json() if the server sends JSON errors
+      const errorResponse = await response.text(); 
       console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
       throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
     }
@@ -49,8 +48,7 @@ export const updateCategory = async (id, category) => {
     });
 
     if (!response.ok) {
-      // Attempt to parse the response body for more error details
-      const errorResponse = await response.text(); // or response.json() if the server sends JSON errors
+      const errorResponse = await response.text(); 
       console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
       throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
     }
@@ -71,8 +69,7 @@ export const deleteCategory = async (id) => {
     });
 
     if (!response.ok) {
-      // Attempt to parse the response body for more error details
-      const errorResponse = await response.text(); // or response.json() if the server sends JSON errors
+      const errorResponse = await response.text(); 
       console.error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
       throw new Error(`HTTP error! Status: ${response.status}, Response: ${errorResponse}`);
     }
@@ -92,10 +89,10 @@ export const getCategoryById = async (id) => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const result = await response.json();
-    console.log('Fetched category by ID:', result); // Log the result
-    return result.data || {}; // Ensure it returns an object
+    console.log('Fetched category by ID:', result); 
+    return result.data || {};
   } catch (error) {
     console.error('Failed to fetch category by ID:', error);
-    return {}; // Return an empty object in case of an error
+    return {}; 
   }
 };
