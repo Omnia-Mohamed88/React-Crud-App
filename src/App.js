@@ -6,6 +6,7 @@ import Update from './features/categories/pages/Update';
 import List from './features/categories/pages/List';
 import Home from './pages/Home'
 import ListProductPage from './features/products/pages/ListProductPage'
+import CreateProductPage from './features/products/pages/CreateProductPage';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route path="/categories/update/:id" element={<Update />} />
         <Route path="/home" element={<Home />}/>
         <Route path="/products" element={<ListProductPage />}/>
-
+        <Route path="/products/create" element={<CreateProductPage />} />
 
       </Routes>
     </Router>

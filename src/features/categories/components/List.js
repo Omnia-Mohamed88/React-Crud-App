@@ -8,8 +8,8 @@ import PaginationComponent from '../../../components/PaginationComponent'; // Im
 
 const List = () => {
   const [categories, setCategories] = useState([]);
-  const [meta, setMeta] = useState({}); // State to store pagination meta
-  const [page, setPage] = useState(1); // State to manage the current page
+  const [meta, setMeta] = useState({}); 
+  const [page, setPage] = useState(1); 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false); 
@@ -73,7 +73,7 @@ const List = () => {
   };
 
   const handlePageChange = (newPage) => {
-    setPage(newPage); // Update the current page state
+    setPage(newPage); 
   };
 
   return (

@@ -17,6 +17,37 @@ const API_URL = process.env.REACT_APP_API_URL + '/categories';
 //   }
 // };
 
+// export const getCategories = async (page = 1, perPage = 5) => {
+//   try {
+//     const response = await axios.get(API_URL, {
+//       params: {
+//         page,
+//         per_page: perPage
+//       }
+//     });
+//     return response.data ; 
+//   } catch (error) {
+//     console.error('Failed to fetch categories:', error);
+//     return { data: [], meta: {} }; 
+//   }
+// };
+  // Fetch categories with pagination
+// export const getCategories = async (page = 1, perPage = 5) => {
+//   try {
+//     const response = await axios.get(API_URL, {
+//       params: {
+//         page,
+//         per_page: perPage
+//       }
+//     });
+//     return response.data.data || []; // Adjust according to your API response structure
+//   } catch (error) {
+//     console.error('Failed to fetch categories:', error);
+//     return []; // Return empty array in case of an error
+//   }
+// };
+
+
 export const getCategories = async (page = 1, perPage = 5) => {
   try {
     const response = await axios.get(API_URL, {
@@ -25,13 +56,12 @@ export const getCategories = async (page = 1, perPage = 5) => {
         per_page: perPage
       }
     });
-    return response.data; 
+    return response.data; // Assuming the response directly contains the list of categories
   } catch (error) {
     console.error('Failed to fetch categories:', error);
-    return { data: [], meta: {} }; 
+    return { data: [], meta: {} }; // Return an object with default structure
   }
 };
-
 // Create a new category
 export const createCategory = async (category) => {
   try {

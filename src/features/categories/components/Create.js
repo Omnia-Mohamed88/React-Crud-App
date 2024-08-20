@@ -3,6 +3,7 @@ import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CreateForm from '../forms/CreateForm';
 import { createCategory } from '../../../services/categoryServices';
+import Swal from 'sweetalert2'
 
 const CreateCategory = () => {
   const [error, setError] = useState('');
@@ -14,6 +15,13 @@ const CreateCategory = () => {
       await createCategory(category);
       setSuccess('Category created successfully!');
       setError('');
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Category created successfully!",
+        showConfirmButton: false,
+        timer: 1500
+      });
       setTimeout(() => {
         navigate('/categories');
       }, 2000); 
