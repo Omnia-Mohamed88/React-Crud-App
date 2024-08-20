@@ -7,7 +7,7 @@ const CreateForm = ({ onSubmit, error }) => {
   const formik = useFormik({
     initialValues: {
       title: '',
-      images: [], // Updated to handle multiple files
+      images: [], 
     },
     validationSchema: createCategorySchema,
     onSubmit: (values) => {

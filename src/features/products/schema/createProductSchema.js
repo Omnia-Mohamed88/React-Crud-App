@@ -8,7 +8,7 @@ const createProductSchema = yup.object().shape({
     .positive('Price must be positive')
     .typeError('Price must be a number'),
   category_id: yup.number().required('Category is required'),
-  images: yup.array().of(yup.mixed())
+  image: yup.mixed().required('Image is required'),
 });
 
 export default createProductSchema;

@@ -19,18 +19,28 @@ export const getProducts = async (page = 1, perPage = 5) => {
   };
 
  
-export const createProduct = async (data) => {
+// Create a new product
+export const createProduct = async (product) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/products', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
+        const formData = new FormData();
+        formData.append('title', product.title);
+        formData.append('description', product.description);
+        formData.append('price', product.price);
+        formData.append('category_id', product.category_id);
+
+        if (product.images && product.images.length > 0) {
+            for (let i = 0; i < product.images.length; i++) {
+                formData.append('attachments[]', product.images[i]);
+            }
+        }
+
+        const response = await axios.post(API_URL, formData);
+        return response.data;
     } catch (error) {
-      throw error;
+        console.error('Failed to create product:', error.message);
+        throw error;
     }
-  };
+};
   
   
   // Update an existing product by ID
@@ -61,7 +71,7 @@ export const createProduct = async (data) => {
   export const deleteProduct = async (id) => {
     try {
       const response = await axios.delete(`${API_URL}/${id}`);
-      console.log('Delete product API response:', response.data); // Log the response
+      console.log('Delete product API response:', response.data); 
       return response.data;
     } catch (error) {
       console.error(`Failed to delete product with ID ${id}:`, error.message);

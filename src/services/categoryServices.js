@@ -56,10 +56,10 @@ export const getCategories = async (page = 1, perPage = 5) => {
         per_page: perPage
       }
     });
-    return response.data; // Assuming the response directly contains the list of categories
+    return response.data; 
   } catch (error) {
     console.error('Failed to fetch categories:', error);
-    return { data: [], meta: {} }; // Return an object with default structure
+    return { data: [], meta: {} }; 
   }
 };
 // Create a new category

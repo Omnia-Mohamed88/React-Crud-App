@@ -4,6 +4,7 @@ import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import PaginationComponent from '../../../components/PaginationComponent';
+import Swal from 'sweetalert2';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -38,6 +39,13 @@ const ProductList = () => {
           await fetchProducts(page); 
           setConfirmationOpen(false);
           setProductToDelete(null);
+          await Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Product deleted successfully!',
+            showConfirmButton: false,
+            timer: 1500
+          });
         } else {
           console.error('Failed to delete product:', response.message);
         }
