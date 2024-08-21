@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@mui/material';
-import { getCategories } from '../../../services/categoryServices'; 
+import { getCategories } from 'services/categoryServices'; 
 
 const CreateProductForm = ({ onSubmit, error }) => {
     const [formData, setFormData] = useState({

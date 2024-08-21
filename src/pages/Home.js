@@ -1,7 +1,7 @@
 // src/pages/Home.js
 import React, { useEffect, useState } from 'react';
-import ReusableCard from '../components/ReusableCard';
-import { getCategories } from '../services/categoryServices';
+import ReusableCard from 'components/ReusableCard';
+import { getCategories } from 'services/categoryServices';
 import { Container, Grid } from '@mui/material';
 
 const Home = () => {

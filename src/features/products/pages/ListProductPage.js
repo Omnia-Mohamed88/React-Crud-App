@@ -1,6 +1,6 @@
 import React from 'react';
-import ProductList from '../components/ProductList'; 
-import ReusableButton from '../../../components/ReusableButton'; 
+import ProductList from 'features/products/components/ProductList'; 
+import ReusableButton from 'components/ReusableButton'; 
 import { Box, Typography } from '@mui/material';
 
 const ListProductPage = () => {

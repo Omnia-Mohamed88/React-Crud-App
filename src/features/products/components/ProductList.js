@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getProducts, deleteProduct } from '../../../services/productServices'; 
-import ReusableTable from '../../../components/ReusableTable';
+import { getProducts, deleteProduct } from 'services/productServices'; 
+import ReusableTable from 'components/ReusableTable';
 import { Container, Paper, CircularProgress, Typography } from '@mui/material';
-import ConfirmationModal from '../../../components/ConfirmationModal';
-import PaginationComponent from '../../../components/PaginationComponent';
+import ConfirmationModal from 'components/ConfirmationModal';
+import PaginationComponent from 'components/PaginationComponent';
 import Swal from 'sweetalert2';
-import UpdateProduct from './UpdateProduct';  
+import UpdateProduct from 'features/products/components/UpdateProduct';  
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);

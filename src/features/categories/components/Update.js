@@ -1,7 +1,8 @@
 import React from 'react';
-import ReusableModal from '../../../components/ReusableModal';
-import UpdateForm from '../forms/UpdateForm';
-import { updateCategory } from '../../../services/categoryServices'; 
+import ReusableModal from 'components/ReusableModal';
+import UpdateForm from 'features/categories/forms/UpdateForm';
+import { updateCategory } from 'services/categoryServices';
+
 
 const Update = ({ open, onClose, category, onUpdate }) => {
   const handleUpdate = async (values) => {

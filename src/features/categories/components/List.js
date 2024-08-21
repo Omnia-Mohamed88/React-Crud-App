@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getCategories, deleteCategory, getCategoryById } from '../../../services/categoryServices'; 
-import ReusableTable from '../../../components/ReusableTable';
+import { getCategories, deleteCategory, getCategoryById } from 'services/categoryServices';
+import ReusableTable from 'components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import Update from './Update'; 
-import ConfirmationModal from '../../../components/ConfirmationModal';
-import PaginationComponent from '../../../components/PaginationComponent'; 
+import ConfirmationModal from 'components/ConfirmationModal';
+import PaginationComponent from 'components/PaginationComponent';
+
 
 const List = () => {
   const [categories, setCategories] = useState([]);

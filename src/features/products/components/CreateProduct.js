@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import CreateProductForm from '../forms/CreateProductForm';
-import { createProduct } from '../../../services/productServices';
+import CreateProductForm from 'features/products/forms/CreateProductForm';
+import { createProduct } from 'services/productServices';
 import Swal from 'sweetalert2';
 
 const CreateProduct = () => {

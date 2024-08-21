@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Button, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
-import { updateProductSchema } from '../schema/updateProductSchema'; 
+import { updateProductSchema } from 'features/products/schema/updateProductSchema'; 
 
 const UpdateProductForm = ({ product, categories, onSubmit }) => {
   const formik = useFormik({

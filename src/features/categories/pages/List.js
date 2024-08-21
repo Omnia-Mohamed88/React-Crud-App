@@ -1,6 +1,6 @@
 import React from 'react';
-import List from '../components/List';
-import ReusableButton from '../../../components/ReusableButton';
+import List from 'features/categories/components/List';
+import ReusableButton from 'components/ReusableButton';
 import { Box, Typography } from '@mui/material';
 
 const ListCategoryPage = () => {
