@@ -79,12 +79,23 @@ const List = () => {
   return (
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: '16px' }}>
-        <ReusableTable
+        {/* <ReusableTable
           headers={['ID', 'Title', 'Image', 'Actions']}
           rows={categories}
           onEdit={handleUpdate}
           onDelete={handleOpenConfirmation} 
-        />
+        /> */}
+        <ReusableTable
+  headers={['ID', 'Title', 'Image', 'Actions']}
+  rows={categories.map((category) => ({
+    id: category.id,
+    title: category.title,
+    attachments: category.attachments
+  }))}
+  onEdit={handleUpdate}
+  onDelete={handleOpenConfirmation} 
+/>
+
         {modalOpen && selectedCategory && (
           <Update
             open={modalOpen}

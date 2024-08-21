@@ -7,7 +7,7 @@ const CreateForm = ({ onSubmit, error }) => {
   const formik = useFormik({
     initialValues: {
       title: '',
-      images: [], 
+      images: [],
     },
     validationSchema: createCategorySchema,
     onSubmit: (values) => {
@@ -43,7 +43,7 @@ const CreateForm = ({ onSubmit, error }) => {
         value={formik.values.title}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.title && (formik.errors.title)}
+        error={formik.touched.title && Boolean(formik.errors.title)}
         helperText={formik.touched.title && formik.errors.title}
       />
       
@@ -52,7 +52,7 @@ const CreateForm = ({ onSubmit, error }) => {
         id="images"
         name="images"
         onChange={handleFileChange}
-        inputProps={{ accept: 'image/*', multiple: true }} 
+        inputProps={{ accept: 'image/*', multiple: true }}
       />
       
       <Button type="submit" fullWidth variant="contained" color="primary">

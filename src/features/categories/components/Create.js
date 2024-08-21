@@ -3,7 +3,7 @@ import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CreateForm from '../forms/CreateForm';
 import { createCategory } from '../../../services/categoryServices';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 const CreateCategory = () => {
   const [error, setError] = useState('');
@@ -24,8 +24,9 @@ const CreateCategory = () => {
       });
       setTimeout(() => {
         navigate('/categories');
-      }, 2000); 
+      }, 2000);
     } catch (err) {
+      console.error('Failed to create category:', err);
       setError('Failed to create category. Please try again.');
       setSuccess('');
     }

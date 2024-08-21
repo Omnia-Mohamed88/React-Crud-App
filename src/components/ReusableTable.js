@@ -18,16 +18,31 @@ const ReusableTable = ({ headers, rows, onEdit, onDelete }) => {
               <TableRow key={row.id}>
                 {headers.slice(0, -1).map((header, index) => (
                   <TableCell key={index}>
-                    {header.toLowerCase() === 'image' ? (
-                      row.image ? (
-                        row.image
-                      ) : (
-                        <span>No image</span>
-                      )
-                    ) : (
-                      row[header.toLowerCase()] || '-'
-                    )}
-                  </TableCell>
+  {header.toLowerCase() === 'image' ? (
+    row.attachments && row.attachments.length > 0 ? (
+      <img
+        src={row.attachments[0].file_path}
+        alt={row.title ? row.title : "Image"}
+        style={{ width: 100, height: 100, objectFit: 'cover' }}
+      />
+    ) : (
+      <span>No image</span>
+    )
+  ) : header.toLowerCase() === 'category image' ? (
+    row.category && row.category.attachments && row.category.attachments.length > 0 ? (
+      <img
+        src={row.category.attachments[0].file_path}
+        alt={row.category.title ? row.category.title : "Category Image"}
+        style={{ width: 100, height: 100, objectFit: 'cover' }}
+      />
+    ) : (
+      <span>No category image</span>
+    )
+  ) : (
+    row[header.toLowerCase()] || '-'
+  )}
+</TableCell>
+
                 ))}
                 <TableCell>
                   {onEdit && (

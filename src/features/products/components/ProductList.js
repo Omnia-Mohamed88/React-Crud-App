@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { getProducts, deleteProduct, updateProduct } from '../../../services/productServices'; 
+import { getProducts, deleteProduct } from '../../../services/productServices'; 
 import ReusableTable from '../../../components/ReusableTable';
-import { Container, Paper } from '@mui/material';
+import { Container, Paper, CircularProgress, Typography } from '@mui/material';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import PaginationComponent from '../../../components/PaginationComponent';
 import Swal from 'sweetalert2';
@@ -15,14 +15,18 @@ const ProductList = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [productToUpdate, setProductToUpdate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchProducts = async (page) => {
+    setLoading(true);
     try {
       const response = await getProducts(page);
       setProducts(response.data);
       setMeta(response.meta);
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,27 +92,34 @@ const ProductList = () => {
   return (
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: '16px' }}>
-        <ReusableTable
-          headers={['ID', 'Title', 'Description', 'Price', 'Category', 'Image', 'Actions']}
-          rows={products.map(product => ({
-            id: product.id,
-            title: product.title,
-            description: product.description,
-            price: product.price,
-            category: product.category ? product.category.title : 'N/A',
-            image: product.attachments && product.attachments.length > 0 ? (
-              <img src={product.attachments[0].file_path} alt={product.title} style={{ width: '100px', height: 'auto' }} />
-            ) : 'No Image',
-            actions: (
-              <>
-                <button onClick={() => handleOpenUpdateModal(product.id)}>Update</button>
-                <button onClick={() => handleOpenConfirmation(product.id)}>Delete</button>
-              </>
-            ),
-          }))}
-          onEdit={handleOpenUpdateModal}
-          onDelete={handleOpenConfirmation}
-        />
+        {loading ? (
+          <CircularProgress />
+        ) : products.length === 0 ? (
+          <Typography variant="h6">No products available</Typography>
+        ) : (
+          <ReusableTable
+  headers={['ID', 'Title', 'Description', 'Price', 'Category', 'Attachments', 'Actions']}
+  rows={products.map((product) => ({
+    id: product.id,
+    title: product.title,
+    description: product.description,
+    price: product.price,
+    category: product.category.title,
+    attachments: product.attachments.map((attachment) => (
+      <img
+        key={attachment.id}
+        src={attachment.file_path}
+        alt={`Attachment ${attachment.id}`}
+        style={{ width: '50px', height: '50px' }}
+      />
+    )),
+  }))}
+  onEdit={handleOpenUpdateModal}
+  onDelete={handleOpenConfirmation}
+/>
+
+
+        )}
         <ConfirmationModal
           open={confirmationOpen}
           onClose={handleCloseConfirmation}

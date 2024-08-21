@@ -1,10 +1,6 @@
 import axios from 'axios';
 
-// const API_URL = 'http://localhost:8000/api/categories';
-
 const API_URL = process.env.REACT_APP_API_URL + '/categories';
-
-
 
 export const getCategories = async (page = 1, perPage = 5) => {
   try {
@@ -14,13 +10,13 @@ export const getCategories = async (page = 1, perPage = 5) => {
         per_page: perPage
       }
     });
-    return response.data; 
+    return response.data;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
-    return { data: [], meta: {} }; 
+    return { data: [], meta: {} };
   }
 };
-// Create a new category
+
 export const createCategory = async (category) => {
   try {
     const formData = new FormData();
@@ -31,7 +27,13 @@ export const createCategory = async (category) => {
         formData.append('attachments[]', category.images[i]);
       }
     }
-    const response = await axios.post(API_URL, formData);
+
+    const response = await axios.post(API_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
     return response.data;
   } catch (error) {
     console.error('Failed to create category:', error.message);
