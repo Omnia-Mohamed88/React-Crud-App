@@ -1,24 +1,19 @@
 import React from 'react';
-import { TextField, Button, Input } from '@mui/material';
+import { TextField, Button, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
-import updateProductSchema from '../schema/updateProductSchema';
+import { updateProductSchema } from '../schema/updateProductSchema'; 
 
-const UpdateProductForm = ({ product, onSubmit }) => {
+const UpdateProductForm = ({ product, categories, onSubmit }) => {
   const formik = useFormik({
     initialValues: {
       title: product.title || '',
       description: product.description || '',
       price: product.price || '',
       category_id: product.category_id || '',
-      images: [],
     },
     validationSchema: updateProductSchema,
     onSubmit: (values) => {
-      const updatedProduct = {
-        ...values,
-        images: values.images ? Array.from(values.images) : [],
-      };
-      onSubmit(updatedProduct);
+      onSubmit(values);
     },
   });
 
@@ -62,22 +57,20 @@ const UpdateProductForm = ({ product, onSubmit }) => {
         fullWidth
         id="category_id"
         name="category_id"
-        label="Category ID"
-        type="number"
+        select
+        label="Category"
         value={formik.values.category_id}
         onChange={formik.handleChange}
         error={formik.touched.category_id && Boolean(formik.errors.category_id)}
         helperText={formik.touched.category_id && formik.errors.category_id}
         margin="normal"
-      />
-      <Input
-        id="images"
-        name="images"
-        type="file"
-        inputProps={{ multiple: true }}
-        onChange={(event) => formik.setFieldValue('images', event.currentTarget.files)}
-        margin="normal"
-      />
+      >
+        {categories.map((category) => (
+          <MenuItem key={category.id} value={category.id}>
+            {category.title}
+          </MenuItem>
+        ))}
+      </TextField>
       <Button color="primary" variant="contained" fullWidth type="submit">
         Update
       </Button>

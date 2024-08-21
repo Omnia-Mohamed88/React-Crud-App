@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button, Typography } from '@mui/material';
 
-const ConfirmationModal = ({ open, onClose, onConfirm, title, message }) => { // destructed props
+const ConfirmationModal = ({ open, onClose, onConfirm, title, message }) => { 
   return (
     <Modal open={open} onClose={onClose}>
       <div style={{ padding: '16px', background: 'white', margin: 'auto', marginTop: '10%', maxWidth: '400px', textAlign: 'center' }}>

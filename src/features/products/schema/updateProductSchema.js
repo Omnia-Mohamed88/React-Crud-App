@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-const updateProductSchema = Yup.object({
+export const updateProductSchema = Yup.object({
   title: Yup.string()
     .required('Title is required')
     .min(2, 'Title must be at least 2 characters long')
@@ -14,7 +14,4 @@ const updateProductSchema = Yup.object({
   category_id: Yup.number()
     .required('Category ID is required')
     .min(1, 'Category ID must be a valid number'),
-  images: Yup.mixed(),
 });
-
-export default updateProductSchema;

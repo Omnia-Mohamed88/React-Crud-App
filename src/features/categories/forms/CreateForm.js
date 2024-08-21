@@ -24,7 +24,6 @@ const CreateForm = ({ onSubmit, error }) => {
   });
 
   const handleFileChange = (event) => {
-    // Convert FileList to array
     const files = Array.from(event.currentTarget.files);
     formik.setFieldValue('images', files);
   };

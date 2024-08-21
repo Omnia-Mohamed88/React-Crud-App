@@ -43,22 +43,21 @@ export const createProduct = async (product) => {
 };
   
   
-// Update an existing product by ID
-export const updateProduct = async (id, product) => {
+export const updateProduct = async (id, data) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, product, {
+    const response = await axios.put(`${API_URL}/${id}`, data, {
       headers: {
-        'Content-Type': 'multipart/form-data', 
+        'Content-Type': 'application/json',
       },
     });
     console.log('Update product API response:', response.data);
     return response.data;
   } catch (error) {
-    console.error(`Failed to update product with ID ${id}:`, error.message);
+    console.error('Error updating product:', error);
     throw error;
   }
 };
-  
+
   // Delete a product by ID
   export const deleteProduct = async (id) => {
     try {

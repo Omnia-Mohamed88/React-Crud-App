@@ -100,7 +100,7 @@ const List = () => {
           title="Confirm Deletion"
           message="Are you sure you want to delete this category?"
         />
-        <PaginationComponent meta={meta} onPageChange={handlePageChange} /> {/* Add Pagination Component */}
+        <PaginationComponent meta={meta} onPageChange={handlePageChange} /> 
       </Paper>
     </Container>
   );
