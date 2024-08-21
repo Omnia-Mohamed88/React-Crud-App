@@ -43,29 +43,21 @@ export const createProduct = async (product) => {
 };
   
   
-  // Update an existing product by ID
-  export const updateProduct = async (id, product) => {
-    try {
-      const formData = new FormData();
-      formData.append('title', product.title);
-      formData.append('description', product.description);
-      formData.append('price', product.price);
-      formData.append('category_id', product.category_id);
-  
-      if (product.images && product.images.length > 0) {
-        for (let i = 0; i < product.images.length; i++) {
-          formData.append('attachments[]', product.images[i]);
-        }
-      }
-  
-      const response = await axios.put(`${API_URL}/${id}`, formData);
-      console.log('Update product API response:', response.data); 
-      return response.data;
-    } catch (error) {
-      console.error(`Failed to update product with ID ${id}:`, error.message);
-      throw error;
-    }
-  };
+// Update an existing product by ID
+export const updateProduct = async (id, product) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, product, {
+      headers: {
+        'Content-Type': 'multipart/form-data', 
+      },
+    });
+    console.log('Update product API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to update product with ID ${id}:`, error.message);
+    throw error;
+  }
+};
   
   // Delete a product by ID
   export const deleteProduct = async (id) => {
@@ -90,3 +82,7 @@ export const createProduct = async (product) => {
       return {};
     }
   };
+
+
+
+  

@@ -1,7 +1,6 @@
-// src/components/products/ListProductPage.js
 import React from 'react';
 import ProductList from '../components/ProductList'; 
-import ReusableButton from '../../../components/ReusableButton';
+import ReusableButton from '../../../components/ReusableButton'; 
 import { Box, Typography } from '@mui/material';
 
 const ListProductPage = () => {
@@ -19,11 +18,11 @@ const ListProductPage = () => {
       </Typography>
       <ReusableButton
         label="Create Product"
-        to="/products/create" 
+        to="/products/create"
         variant="contained"
         color="primary"
       />
-      <ProductList /> 
+      <ProductList />
     </Box>
   );
 };

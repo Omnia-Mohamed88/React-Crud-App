@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getProducts, deleteProduct } from '../../../services/productServices'; 
+import { getProducts, deleteProduct, updateProduct } from '../../../services/productServices'; 
 import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import PaginationComponent from '../../../components/PaginationComponent';
 import Swal from 'sweetalert2';
+import UpdateProduct from './UpdateProduct';  
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -12,10 +13,11 @@ const ProductList = () => {
   const [page, setPage] = useState(1);
   const [confirmationOpen, setConfirmationOpen] = useState(false); 
   const [productToDelete, setProductToDelete] = useState(null);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [productToUpdate, setProductToUpdate] = useState(null);
 
   const fetchProducts = async (page) => {
     try {
-      console.log('Fetching products for page:', page);
       const response = await getProducts(page);
       setProducts(response.data);
       setMeta(response.meta);
@@ -31,9 +33,7 @@ const ProductList = () => {
   const handleDelete = async () => {
     if (productToDelete !== null) {
       try {
-        console.log(`Attempting to delete product with ID: ${productToDelete}`);
         const response = await deleteProduct(productToDelete);
-        console.log('Delete response:', response);
 
         if (response.message === 'Product deleted successfully') {
           await fetchProducts(page); 
@@ -65,6 +65,22 @@ const ProductList = () => {
     setProductToDelete(null);
   };
 
+  const handleOpenUpdateModal = (id) => {
+    const product = products.find(p => p.id === id);
+    setProductToUpdate(product);
+    setUpdateModalOpen(true);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setUpdateModalOpen(false);
+    setProductToUpdate(null);
+  };
+
+  const handleUpdateSuccess = async () => {
+    await fetchProducts(page);
+    handleCloseUpdateModal();
+  };
+
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -84,9 +100,13 @@ const ProductList = () => {
               <img src={product.attachments[0].file_path} alt={product.title} style={{ width: '100px', height: 'auto' }} />
             ) : 'No Image',
             actions: (
-              <button onClick={() => handleOpenConfirmation(product.id)}>Delete</button>
+              <>
+                <button onClick={() => handleOpenUpdateModal(product.id)}>Update</button>
+                <button onClick={() => handleOpenConfirmation(product.id)}>Delete</button>
+              </>
             ),
           }))}
+          onEdit={handleOpenUpdateModal}
           onDelete={handleOpenConfirmation}
         />
         <ConfirmationModal
@@ -95,6 +115,12 @@ const ProductList = () => {
           onConfirm={handleDelete}
           title="Confirm Deletion"
           message="Are you sure you want to delete this product?"
+        />
+        <UpdateProduct
+          open={updateModalOpen}
+          onClose={handleCloseUpdateModal}
+          product={productToUpdate}
+          onUpdate={handleUpdateSuccess}
         />
         <PaginationComponent meta={meta} onPageChange={handlePageChange} />
       </Paper>

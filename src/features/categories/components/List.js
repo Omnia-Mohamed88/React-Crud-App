@@ -4,7 +4,7 @@ import ReusableTable from '../../../components/ReusableTable';
 import { Container, Paper } from '@mui/material';
 import Update from './Update'; 
 import ConfirmationModal from '../../../components/ConfirmationModal';
-import PaginationComponent from '../../../components/PaginationComponent'; // Import the pagination component
+import PaginationComponent from '../../../components/PaginationComponent'; 
 
 const List = () => {
   const [categories, setCategories] = useState([]);
@@ -19,7 +19,7 @@ const List = () => {
     try {
       const response = await getCategories(page);
       setCategories(response.data);
-      setMeta(response.meta); // Store the pagination meta data
+      setMeta(response.meta); 
     } catch (error) {
       console.error('Error fetching categories:', error);
     }

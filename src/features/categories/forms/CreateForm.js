@@ -53,7 +53,7 @@ const CreateForm = ({ onSubmit, error }) => {
         id="images"
         name="images"
         onChange={handleFileChange}
-        inputProps={{ accept: 'image/*', multiple: true }} // Allow multiple files
+        inputProps={{ accept: 'image/*', multiple: true }} 
       />
       
       <Button type="submit" fullWidth variant="contained" color="primary">
