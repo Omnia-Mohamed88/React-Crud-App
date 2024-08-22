@@ -8,6 +8,7 @@ import Home from './pages/Home'
 import ListProductPage from './features/products/pages/ListProductPage'
 import CreateProductPage from './features/products/pages/CreateProductPage';
 import LoginPage from 'features/login/pages/LoginPage';
+import RegisterPage from 'features/register/pages/RegisterPage';
 import MainLayout from 'layouts/MainLayout';
 
 
@@ -17,6 +18,7 @@ function App() {
       <Routes>
       <Route element={<MainLayout />}>
       <Route path="/login" element={<LoginPage />}/>
+      <Route path="/register" element={<RegisterPage />}/>
       <Route path="/" element={<Home />}/>
 
       </Route>
