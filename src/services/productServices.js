@@ -3,21 +3,41 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_API_URL + '/products';
 
 
-export const getProducts = async (page = 1, perPage = 5) => {
-    try {
-      const response = await axios.get(API_URL, {
-        params: {
-          page,
-          per_page: perPage
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch products:', error);
-      return { data: [], meta: {} };
-    }
-  };
+// export const getProducts = async (page = 1, perPage = 10) => {
+//     try {
+//       const response = await axios.get(API_URL, {
+//         params: {
+//           page,
+//           per_page: perPage
+//         }
+//       });
+//       return response.data;
+//     } catch (error) {
+//       console.error('Failed to fetch products:', error);
+//       return { data: [], meta: {} };
+//     }
+//   };
 
+
+export const getProducts = async (page = 1, searchTerm = '') => {
+  try {
+    // Ensure per_page is an integer, and handle empty searchTerm
+    const perPage = 15; // Set a default value or calculate based on requirements
+
+    const response = await axios.get(`http://localhost:8000/api/products`, {
+      params: {
+        page,
+        per_page: perPage, // Ensure this is an integer
+        search: searchTerm || '', // Handle empty searchTerm
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+    throw error;
+  }
+};
  
 // Create a new product
 export const createProduct = async (product) => {

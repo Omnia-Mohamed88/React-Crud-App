@@ -1,19 +1,27 @@
 import React from 'react';
-import { TextField, Button, MenuItem } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 import { useFormik } from 'formik';
-import { updateProductSchema } from 'features/products/schema/updateProductSchema'; 
+import updateCategorySchema from 'features/categories/schema/updateCategorySchema';
 
-const UpdateProductForm = ({ product, categories, onSubmit }) => {
+const UpdateForm = ({ category, onSubmit }) => {
   const formik = useFormik({
     initialValues: {
-      title: product.title || '',
-      description: product.description || '',
-      price: product.price || '',
-      category_id: product.category_id || '',
+      title: category.title || '',
+      attachments: [], // Initialize with an empty array for attachments
     },
-    validationSchema: updateProductSchema,
+    validationSchema: updateCategorySchema,
     onSubmit: (values) => {
-      onSubmit(values);
+      const formData = new FormData();
+      formData.append('title', values.title);
+
+      if (values.attachments && values.attachments.length > 0) {
+        for (let i = 0; i < values.attachments.length; i++) {
+          formData.append('attachments[]', values.attachments[i]);
+        }
+      }
+
+      // Use PUT method to submit the form data
+      onSubmit(formData);
     },
   });
 
@@ -30,47 +38,16 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
         helperText={formik.touched.title && formik.errors.title}
         margin="normal"
       />
-      <TextField
-        fullWidth
-        id="description"
-        name="description"
-        label="Description"
-        value={formik.values.description}
-        onChange={formik.handleChange}
-        error={formik.touched.description && Boolean(formik.errors.description)}
-        helperText={formik.touched.description && formik.errors.description}
-        margin="normal"
+      <input
+        id="attachments"
+        name="attachments"
+        type="file"
+        multiple
+        onChange={(event) => {
+          formik.setFieldValue('attachments', Array.from(event.target.files));
+        }}
+        style={{ marginTop: 16 }}
       />
-      <TextField
-        fullWidth
-        id="price"
-        name="price"
-        label="Price"
-        type="number"
-        value={formik.values.price}
-        onChange={formik.handleChange}
-        error={formik.touched.price && Boolean(formik.errors.price)}
-        helperText={formik.touched.price && formik.errors.price}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        id="category_id"
-        name="category_id"
-        select
-        label="Category"
-        value={formik.values.category_id}
-        onChange={formik.handleChange}
-        error={formik.touched.category_id && Boolean(formik.errors.category_id)}
-        helperText={formik.touched.category_id && formik.errors.category_id}
-        margin="normal"
-      >
-        {categories.map((category) => (
-          <MenuItem key={category.id} value={category.id}>
-            {category.title}
-          </MenuItem>
-        ))}
-      </TextField>
       <Button color="primary" variant="contained" fullWidth type="submit">
         Update
       </Button>
@@ -78,4 +55,4 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
   );
 };
 
-export default UpdateProductForm;
+export default UpdateForm;

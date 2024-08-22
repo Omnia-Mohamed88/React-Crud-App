@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL + '/categories';
 
-export const getCategories = async (page = 1, perPage = 5) => {
+export const getCategories = async (page = 1, perPage = 10) => {
   try {
     const response = await axios.get(API_URL, {
       params: {
@@ -51,6 +51,19 @@ export const updateCategory = async (id, category) => {
   }
 };
 
+// export const updateCategory = async (id, formData) => {
+//   try {
+//     const response = await axios.put(`http://localhost:8000/api/categories/${id}`, formData, {
+//       headers: {
+//         'Content-Type': 'multipart/form-data',
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error(`Failed to update category with ID ${id}:`, error.response ? error.response.data : error.message);
+//     throw error;
+//   }
+// };
 export const deleteCategory = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/${id}`);
