@@ -21,14 +21,13 @@ const API_URL = process.env.REACT_APP_API_URL + '/products';
 
 export const getProducts = async (page = 1, searchTerm = '') => {
   try {
-    // Ensure per_page is an integer, and handle empty searchTerm
-    const perPage = 15; // Set a default value or calculate based on requirements
+    const perPage = 5; 
 
-    const response = await axios.get(`http://localhost:8000/api/products`, {
+    const response = await axios.get(API_URL, {
       params: {
         page,
-        per_page: perPage, // Ensure this is an integer
-        search: searchTerm || '', // Handle empty searchTerm
+        per_page: perPage, 
+        search: searchTerm || '', 
       },
     });
 
