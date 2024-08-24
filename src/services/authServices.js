@@ -4,6 +4,31 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL 
 
+export const sendPasswordResetLink = async (email) => {
+    try {
+      const response = await axios.post(`${API_URL}/password/email`, { email });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        throw new Error(error.response.data.message || 'Network Error');
+      }
+      throw new Error('Network Error');
+    }
+  };
+
+  export const resetPassword = async (email, password, password_confirmation, token) => {
+    try {
+      const response = await axios.post(`${API_URL}/password/reset`, {
+        email,
+        password,
+        password_confirmation,
+        token
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'An error occurred');
+    }
+  };
 export const register = async (name, email, password, password_confirmation) => {
     try {
       const response = await axios.post(`${API_URL}/register`, { name, email, password, password_confirmation });

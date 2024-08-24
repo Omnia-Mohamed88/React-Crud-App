@@ -10,6 +10,7 @@ import CreateProductPage from './features/products/pages/CreateProductPage';
 import LoginPage from 'features/login/pages/LoginPage';
 import RegisterPage from 'features/register/pages/RegisterPage';
 import MainLayout from 'layouts/MainLayout';
+import RequestResetPage from 'features/reset_password/pages/RequestResetPage';
 
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
       <Route path="/login" element={<LoginPage />}/>
       <Route path="/register" element={<RegisterPage />}/>
       <Route path="/" element={<Home />}/>
+      <Route path="request-reset" element={<RequestResetPage />}/>
+
 
       </Route>
 
