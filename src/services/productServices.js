@@ -19,7 +19,26 @@ const API_URL = process.env.REACT_APP_API_URL + '/products';
 //   };
 
 
-export const getProducts = async (page = 1, searchTerm = '') => {
+// export const getProducts = async (page = 1, searchTerm = '') => {
+//   try {
+//     const perPage = 5; 
+
+//     const response = await axios.get(API_URL, {
+//       params: {
+//         page,
+//         per_page: perPage, 
+//         search: searchTerm || '', 
+//       },
+//     });
+
+//     return response.data;
+//   } catch (error) {
+//     console.error('Failed to fetch products:', error);
+//     throw error;
+//   }
+// };
+
+export const getProducts = async (page = 1, searchTerm = '', categoryId = '') => {
   try {
     const perPage = 5; 
 
@@ -28,6 +47,7 @@ export const getProducts = async (page = 1, searchTerm = '') => {
         page,
         per_page: perPage, 
         search: searchTerm || '', 
+        category_id: categoryId || '',  
       },
     });
 

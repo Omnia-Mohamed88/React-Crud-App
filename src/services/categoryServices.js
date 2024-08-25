@@ -51,19 +51,7 @@ export const updateCategory = async (id, category) => {
   }
 };
 
-// export const updateCategory = async (id, formData) => {
-//   try {
-//     const response = await axios.put(`http://localhost:8000/api/categories/${id}`, formData, {
-//       headers: {
-//         'Content-Type': 'multipart/form-data',
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error(`Failed to update category with ID ${id}:`, error.response ? error.response.data : error.message);
-//     throw error;
-//   }
-// };
+
 export const deleteCategory = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/${id}`);

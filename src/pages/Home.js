@@ -1,19 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { getProducts } from 'services/productServices'; 
+import { getCategories } from 'services/categoryServices'; 
 import ReusableCard from 'components/ReusableCard'; 
 import PaginationComponent from 'components/PaginationComponent';
-import { Container, Grid, TextField, Button, Paper } from '@mui/material';
+import { Container, Grid, TextField, Button, Paper, Select, MenuItem } from '@mui/material';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [meta, setMeta] = useState({});
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const fetchProducts = async (page = 1, searchTerm = '') => {
+  useEffect(() => {
+    fetchCategories(); 
+    fetchProducts(page, searchTerm, categoryId);
+  }, [page, searchTerm, categoryId]);
+
+  const fetchCategories = async () => {
     try {
-      const response = await getProducts(page, searchTerm);
+      const response = await getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchProducts = async (page = 1, searchTerm = '', categoryId = '') => {
+    try {
+      const response = await getProducts(page, searchTerm, categoryId);
       setProducts(response.data);
       setMeta(response.meta);
     } catch (error) {
@@ -21,18 +38,15 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts(page, searchTerm);
-  }, [page, searchTerm]);
-
   const handleSearch = () => {
     setIsSearching(true);
     setPage(1); 
-    fetchProducts(1, searchTerm);
+    fetchProducts(1, searchTerm, categoryId);
   };
 
   const handleClear = () => {
     setSearchTerm('');
+    setCategoryId('');
     setIsSearching(false);
     setPage(1); 
     fetchProducts(1); 
@@ -40,18 +54,14 @@ const Home = () => {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    if (isSearching) {
-      fetchProducts(newPage, searchTerm);
-    } else {
-      fetchProducts(newPage);
-    }
+    fetchProducts(newPage, searchTerm, categoryId);
   };
 
   return (
     <Container component="main" maxWidth="lg">
       <Paper elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <TextField
               fullWidth
               label="Search"
@@ -60,7 +70,24 @@ const Home = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} md={6} container spacing={1}>
+          <Grid item xs={12} md={4}>
+            <Select
+              fullWidth
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="">
+                <em>All Categories</em>
+              </MenuItem>
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} md={4} container spacing={1}>
             <Grid item>
               <Button
                 variant="contained"
