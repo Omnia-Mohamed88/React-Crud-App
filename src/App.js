@@ -29,6 +29,7 @@ function App() {
           </Route>
 
           {/* Protected routes with AdminLayout for admin and superadmin roles */}
+          
           <Route element={<ProtectedRoute roles={['admin', 'superadmin']} />}>
             <Route element={<AdminLayout />}>
               <Route path="/categories" element={<List />} />

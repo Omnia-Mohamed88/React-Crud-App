@@ -28,6 +28,7 @@ const Home = () => {
     }
   };
 
+
   const fetchProducts = async (page = 1, searchTerm = '', categoryId = '') => {
     try {
       const response = await getProducts(page, searchTerm, categoryId);
@@ -38,6 +39,7 @@ const Home = () => {
     }
   };
 
+  
   const handleSearch = () => {
     setIsSearching(true);
     setPage(1); 

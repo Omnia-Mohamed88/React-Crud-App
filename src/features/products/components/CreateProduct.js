@@ -11,7 +11,7 @@ const CreateProduct = () => {
   const navigate = useNavigate();
 
   const handleCreateProduct = async (formData) => {
-    console.log('Submitting product:', formData);
+    console.log('Submitting product: in comp', formData);
     try {
       await createProduct(formData); 
       setSuccess('Product created successfully!');

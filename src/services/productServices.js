@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setAuthHeader } from 'services/authServices'; 
+import { setAuthHeader } from 'services/authServices';
 
 const API_URL = process.env.REACT_APP_API_URL + '/products';
 
@@ -24,18 +24,50 @@ export const getProducts = async (page = 1, searchTerm = '', categoryId = '') =>
   }
 };
 
+export const uploadImage = async (imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('files[]', imageFile); 
+
+    const response = await axios.post('http://localhost:8000/api/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    const imageUrl = response.data.urls[0]; 
+    console.log('Upload response:', response.data);
+    console.log('Uploaded image URL:', imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error('Failed to upload image:', error.message);
+    throw error;
+  }
+};
+
+
+
+
 // Create a new product
 export const createProduct = async (product) => {
   try {
     setAuthHeader(); 
+
+    let imageUrl = '';
+
+    if (product.images && product.images.length > 0) {
+      imageUrl = await uploadImage(product.images[0]);
+    }
+
     const formData = new FormData();
     formData.append('title', product.title);
     formData.append('description', product.description);
     formData.append('price', product.price);
     formData.append('category_id', product.category_id);
+    formData.append('image_url', product.image_url); 
 
-    if (product.images && product.images.length > 0) {
-      for (let i = 0; i < product.images.length; i++) {
+    if (product.images && product.images.length > 1) {
+      for (let i = 1; i < product.images.length; i++) {
         formData.append('attachments[]', product.images[i]);
       }
     }
@@ -45,14 +77,16 @@ export const createProduct = async (product) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+    console.log('Product creation response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Failed to create product:', error.message);
-    throw error;
-  }
+  console.error('Failed to create product:', error.response ? error.response.data : error.message);
+  throw error;
+}
+
 };
 
-// Update a product
+// Update an existing product by ID
 export const updateProduct = async (id, data) => {
   try {
     setAuthHeader(); 

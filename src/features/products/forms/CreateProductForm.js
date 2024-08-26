@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@mui/material';
-import { getCategories } from 'services/categoryServices'; 
+import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { getCategories } from 'services/categoryServices';
+import { uploadImage } from 'services/productServices'; 
 
 const CreateProductForm = ({ onSubmit, error }) => {
     const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const CreateProductForm = ({ onSubmit, error }) => {
         description: '',
         price: '',
         category_id: '',
-        images: [] 
+        image_url: ''  
     });
     const [categories, setCategories] = useState([]);
 
@@ -25,16 +26,36 @@ const CreateProductForm = ({ onSubmit, error }) => {
         fetchCategories();
     }, []);
 
-    const handleChange = (event) => {
+    const handleChange = async (event) => {
         const { name, value, files } = event.target;
-        setFormData({
+      
+        if (name === 'images' && files && files.length > 0) {
+          console.log('Selected file:', files[0]);
+      
+          try {
+            const imageUrl = await uploadImage(files[0]);
+            console.log('Uploaded image URL:', imageUrl);
+      
+            setFormData({
+              ...formData,
+              image_url: imageUrl,
+            });
+          } catch (error) {
+            console.error('Failed to upload image:', error);
+          }
+        } else {
+          setFormData({
             ...formData,
-            [name]: files ? Array.from(files) : value 
-        });
-    };
-
+            [name]: value,
+          });
+        }
+      };
+      
+      
+    
     const handleFormSubmit = async (event) => {
         event.preventDefault();
+        console.log('Submitting product: in form', formData); 
         try {
             await onSubmit(formData);
             setFormData({
@@ -42,13 +63,13 @@ const CreateProductForm = ({ onSubmit, error }) => {
                 description: '',
                 price: '',
                 category_id: '',
-                images: []
+                image_url: '',
             });
         } catch (error) {
             console.error('Error creating product:', error);
         }
     };
-
+    
     return (
         <form onSubmit={handleFormSubmit}>
             <Grid container spacing={2}>
@@ -106,7 +127,6 @@ const CreateProductForm = ({ onSubmit, error }) => {
                         type="file"
                         name="images"
                         accept="image/*"
-                        multiple
                         onChange={handleChange}
                     />
                 </Grid>
