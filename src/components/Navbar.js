@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import { Home as HomeIcon, Login as LoginIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout } from 'services/authServices';
+import { isAuthenticated, logout } from 'services/authServices'; 
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout(); 
-    navigate('/login');
+    navigate('/login'); 
   };
 
   return (
@@ -22,12 +22,11 @@ const Navbar = () => {
         <IconButton color="inherit" component={Link} to="/">
           <HomeIcon />
         </IconButton>
-        {!auth && (
+        {!auth ? (
           <IconButton color="inherit" component={Link} to="/login">
             <LoginIcon />
           </IconButton>
-        )}
-        {auth && (
+        ) : (
           <IconButton color="inherit" onClick={handleLogout}>
             <LogoutIcon />
           </IconButton>

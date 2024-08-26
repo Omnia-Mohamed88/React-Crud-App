@@ -7,7 +7,7 @@ const UpdateForm = ({ category, onSubmit }) => {
   const formik = useFormik({
     initialValues: {
       title: category.title || '',
-      attachments: [], // Initialize with an empty array for attachments
+      attachments: [], 
     },
     validationSchema: updateCategorySchema,
     onSubmit: (values) => {
@@ -20,7 +20,6 @@ const UpdateForm = ({ category, onSubmit }) => {
         }
       }
 
-      // Use PUT method to submit the form data
       onSubmit(formData);
     },
   });

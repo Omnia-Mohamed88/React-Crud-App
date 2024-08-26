@@ -1,9 +1,11 @@
 import axios from 'axios';
+import { setAuthHeader } from './authServices'; 
 
 const API_URL = process.env.REACT_APP_API_URL + '/categories';
 
 export const getCategories = async (page = 1, perPage = 10) => {
   try {
+    setAuthHeader(); 
     const response = await axios.get(API_URL, {
       params: {
         page,
@@ -19,6 +21,7 @@ export const getCategories = async (page = 1, perPage = 10) => {
 
 export const createCategory = async (category) => {
   try {
+    setAuthHeader();
     const formData = new FormData();
     formData.append('title', category.title);
 
@@ -43,6 +46,7 @@ export const createCategory = async (category) => {
 
 export const updateCategory = async (id, category) => {
   try {
+    setAuthHeader(); 
     const response = await axios.put(`${API_URL}/${id}`, category);
     return response.data;
   } catch (error) {
@@ -51,9 +55,9 @@ export const updateCategory = async (id, category) => {
   }
 };
 
-
 export const deleteCategory = async (id) => {
   try {
+    setAuthHeader(); 
     const response = await axios.delete(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
@@ -64,6 +68,7 @@ export const deleteCategory = async (id) => {
 
 export const getCategoryById = async (id) => {
   try {
+    setAuthHeader(); 
     const response = await axios.get(`${API_URL}/${id}`);
     console.log(`Fetched category by ID ${id}:`, response.data);
     return response.data.data || {};
