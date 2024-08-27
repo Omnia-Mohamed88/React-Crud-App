@@ -6,6 +6,7 @@ import ConfirmationModal from 'components/ConfirmationModal';
 import PaginationComponent from 'components/PaginationComponent';
 import Swal from 'sweetalert2';
 import UpdateProduct from 'features/products/components/UpdateProduct';  
+import axios from 'axios';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -69,12 +70,29 @@ const ProductList = () => {
     setProductToDelete(null);
   };
 
-  const handleOpenUpdateModal = (id) => {
-    const product = products.find(p => p.id === id);
-    setProductToUpdate(product);
-    setUpdateModalOpen(true);
+  // const handleOpenUpdateModal = (id) => {
+  //   const product = products.find(p => p.id === id);
+  //   setProductToUpdate(product);
+  //   setUpdateModalOpen(true);
+  // };
+  const handleOpenUpdateModal = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/products/${id}`);
+      const product = response.data.data;
+  
+      // Set the product data including the category and attachments
+      setProductToUpdate({
+        ...product,
+        attachments: product.attachments, // Store the attachments for preview
+      });
+  
+      // Open the modal
+      setUpdateModalOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch product data:', error);
+    }
   };
-
+  
   const handleCloseUpdateModal = () => {
     setUpdateModalOpen(false);
     setProductToUpdate(null);

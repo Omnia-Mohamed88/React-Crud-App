@@ -48,6 +48,7 @@ export const uploadImage = async (imageFile) => {
 
 
 
+
 // Create a new product
 export const createProduct = async (product) => {
   try {
@@ -87,6 +88,22 @@ export const createProduct = async (product) => {
 };
 
 // Update an existing product by ID
+// export const updateProduct = async (id, data) => {
+//   try {
+//     setAuthHeader(); 
+//     const response = await axios.put(`${API_URL}/${id}`, data, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//     console.log('Update product API response:', response.data);
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error updating product:', error);
+//     throw error;
+//   }
+// };
+
 export const updateProduct = async (id, data) => {
   try {
     setAuthHeader(); 
