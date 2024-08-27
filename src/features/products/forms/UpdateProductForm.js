@@ -3,24 +3,27 @@ import { TextField, Button } from '@mui/material';
 import { useFormik } from 'formik';
 import updateCategorySchema from 'features/categories/schema/updateCategorySchema';
 
-const UpdateForm = ({ category, onSubmit }) => {
+const UpdateForm = ({ category = {}, onSubmit }) => {
   const formik = useFormik({
     initialValues: {
       title: category.title || '',
-      attachments: [], 
+      attachments: [],
     },
     validationSchema: updateCategorySchema,
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const formData = new FormData();
       formData.append('title', values.title);
 
       if (values.attachments && values.attachments.length > 0) {
-        for (let i = 0; i < values.attachments.length; i++) {
-          formData.append('attachments[]', values.attachments[i]);
-        }
+        values.attachments.forEach((file) => {
+          formData.append('attachments[]', file);
+        });
       }
 
       onSubmit(formData);
+
+      resetForm();
+      document.getElementById('attachments').value = null;
     },
   });
 

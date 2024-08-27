@@ -4,7 +4,6 @@ import { getCategories } from 'services/categoryServices';
 import { updateProduct } from 'services/productServices'; 
 import UpdateProductForm from 'features/products/forms/UpdateProductForm';
 
-
 const UpdateProduct = ({ open, onClose, product, onUpdate }) => {
   const [categories, setCategories] = useState([]);
 
@@ -23,10 +22,14 @@ const UpdateProduct = ({ open, onClose, product, onUpdate }) => {
 
   const handleUpdateProduct = async (values) => {
     try {
-      const updatedProduct = await updateProduct(product.id, values);
-      console.log('Product updated:', updatedProduct);
-      onUpdate();
-      onClose();
+      if (product) {
+        const updatedProduct = await updateProduct(product.id, values);
+        console.log('Product updated:', updatedProduct);
+        onUpdate();
+        onClose();
+      } else {
+        console.error('No product selected for update');
+      }
     } catch (error) {
       console.error('Error updating product:', error);
     }
@@ -35,11 +38,15 @@ const UpdateProduct = ({ open, onClose, product, onUpdate }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={{ p: 3, backgroundColor: 'white', borderRadius: '8px', width: '400px', margin: 'auto', marginTop: '10%' }}>
-        <UpdateProductForm
-          product={product}
-          categories={categories}
-          onSubmit={handleUpdateProduct}
-        />
+        {product ? (
+          <UpdateProductForm
+            product={product}
+            categories={categories}
+            onSubmit={handleUpdateProduct}
+          />
+        ) : (
+          <div>No product selected for update</div>
+        )}
       </Box>
     </Modal>
   );
