@@ -165,11 +165,11 @@ const CreateProductForm = ({ onSubmit, error }) => {
 
                 {uploadedImages.map((imageUrl, index) => (
                     <Grid item xs={12} key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-                        <img
+                        {/* <img
                             src={imageUrl} 
                             alt={`Uploaded ${index}`}
                             style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px' }}
-                        />
+                        /> */}
                         <IconButton onClick={() => handleViewImage(imageUrl)} color="primary">
                             <VisibilityIcon />
                         </IconButton>
