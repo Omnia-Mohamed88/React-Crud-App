@@ -38,14 +38,13 @@ const CreateProductForm = ({ onSubmit, error }) => {
                 let imageUrl = await uploadImage(files[0]);
                 console.log('Uploaded image URL:', imageUrl);
 
-                if (!imageUrl.startsWith('http')) {
-                    imageUrl = `http://localhost:8000${imageUrl}`;
-                }
+                const cleanedImageUrl = imageUrl.replace('http://localhost:8000', '');
 
                 setUploadedImages([...uploadedImages, imageUrl]);
+
                 setFormData({
                     ...formData,
-                    image_url: imageUrl,
+                    image_url: cleanedImageUrl,
                 });
             } catch (error) {
                 console.error('Failed to upload image:', error);
@@ -59,7 +58,8 @@ const CreateProductForm = ({ onSubmit, error }) => {
     };
 
     const handleViewImage = (imageUrl) => {
-        window.open(imageUrl, '_blank');
+        const viewUrl = imageUrl.startsWith('http://localhost:8000') ? imageUrl : `http://localhost:8000${imageUrl}`;
+        window.open(viewUrl, '_blank');
     };
 
     const handleDeleteImage = async (imageUrl) => {
@@ -68,7 +68,7 @@ const CreateProductForm = ({ onSubmit, error }) => {
             setUploadedImages(uploadedImages.filter(image => image !== imageUrl));
             setFormData({
                 ...formData,
-                image_url: '', 
+                image_url: '',
             });
         } catch (error) {
             console.error('Failed to delete image:', error.message);
@@ -76,9 +76,10 @@ const CreateProductForm = ({ onSubmit, error }) => {
     };
 
     const handleDownloadImage = (imageUrl) => {
+        const downloadUrl = imageUrl.startsWith('http://localhost:8000') ? imageUrl : `http://localhost:8000${imageUrl}`;
         const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = imageUrl.split('/').pop();
+        link.href = downloadUrl;
+        link.download = downloadUrl.split('/').pop();
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -165,7 +166,7 @@ const CreateProductForm = ({ onSubmit, error }) => {
                 {uploadedImages.map((imageUrl, index) => (
                     <Grid item xs={12} key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
                         <img
-                            src={imageUrl}
+                            src={imageUrl} 
                             alt={`Uploaded ${index}`}
                             style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px' }}
                         />
