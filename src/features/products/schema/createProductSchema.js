@@ -1,14 +1,19 @@
+// features/products/schema/createProductSchema.js
 import * as yup from 'yup';
 
-const createProductSchema = yup.object().shape({
-  title: yup.string().required('Title is required'),
-  description: yup.string().required('Description is required'),
+export const createProductSchema = yup.object().shape({
+  title: yup.string()
+    .required('Title is required')
+    .min(2, 'Title must be at least 2 characters long')
+    .max(50, 'Title must be at most 50 characters long'),
+  description: yup.string()
+    .required('Description is required')
+    .min(10, 'Description must be at least 10 characters long'),
   price: yup.number()
     .required('Price is required')
-    .positive('Price must be positive')
-    .typeError('Price must be a number'),
-  category_id: yup.number().required('Category is required'),
-  image: yup.mixed().required('Image is required'),
+    .positive('Price must be a positive number')
+    .min(0, 'Price must be a positive number'),
+  category_id: yup.number()
+    .required('Category ID is required')
+    .min(1, 'Category ID must be a valid number'),
 });
-
-export default createProductSchema;
