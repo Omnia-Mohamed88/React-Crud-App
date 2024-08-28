@@ -3,6 +3,29 @@ import { setAuthHeader } from 'services/authServices';
 
 const API_URL = process.env.REACT_APP_API_URL + '/products';
 
+// services/productServices.js
+
+export const deleteImage = async (fileUrl) => {
+  try {
+    setAuthHeader(); 
+
+    const response = await axios.post('http://localhost:8000/api/delete-image', 
+      { file_url: fileUrl },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Delete image response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to delete image:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
 export const getProducts = async (page = 1, searchTerm = '', categoryId = '') => {
   try {
     setAuthHeader(); 
@@ -144,4 +167,5 @@ export const getProductById = async (id) => {
     console.error(`Failed to fetch product by ID ${id}:`, error.message);
     return {};
   }
+  
 };

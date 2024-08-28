@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, Button, IconButton } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 import { getCategories } from 'services/categoryServices';
-import { uploadImage } from 'services/productServices'; 
+import { uploadImage, deleteImage } from 'services/productServices';
 
 const CreateProductForm = ({ onSubmit, error }) => {
     const [formData, setFormData] = useState({
@@ -9,9 +12,10 @@ const CreateProductForm = ({ onSubmit, error }) => {
         description: '',
         price: '',
         category_id: '',
-        image_url: ''  
+        image_url: ''
     });
     const [categories, setCategories] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -28,34 +32,60 @@ const CreateProductForm = ({ onSubmit, error }) => {
 
     const handleChange = async (event) => {
         const { name, value, files } = event.target;
-      
+
         if (name === 'images' && files && files.length > 0) {
-          console.log('Selected file:', files[0]);
-      
-          try {
-            const imageUrl = await uploadImage(files[0]);
-            console.log('Uploaded image URL:', imageUrl);
-      
-            setFormData({
-              ...formData,
-              image_url: imageUrl,
-            });
-          } catch (error) {
-            console.error('Failed to upload image:', error);
-          }
+            try {
+                let imageUrl = await uploadImage(files[0]);
+                console.log('Uploaded image URL:', imageUrl);
+
+                if (!imageUrl.startsWith('http')) {
+                    imageUrl = `http://localhost:8000${imageUrl}`;
+                }
+
+                setUploadedImages([...uploadedImages, imageUrl]);
+                setFormData({
+                    ...formData,
+                    image_url: imageUrl,
+                });
+            } catch (error) {
+                console.error('Failed to upload image:', error);
+            }
         } else {
-          setFormData({
-            ...formData,
-            [name]: value,
-          });
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
         }
-      };
-      
-      
-    
+    };
+
+    const handleViewImage = (imageUrl) => {
+        window.open(imageUrl, '_blank');
+    };
+
+    const handleDeleteImage = async (imageUrl) => {
+        try {
+            await deleteImage(imageUrl);
+            setUploadedImages(uploadedImages.filter(image => image !== imageUrl));
+            setFormData({
+                ...formData,
+                image_url: '', 
+            });
+        } catch (error) {
+            console.error('Failed to delete image:', error.message);
+        }
+    };
+
+    const handleDownloadImage = (imageUrl) => {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = imageUrl.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleFormSubmit = async (event) => {
         event.preventDefault();
-        console.log('Submitting product: in form', formData); 
         try {
             await onSubmit(formData);
             setFormData({
@@ -65,11 +95,12 @@ const CreateProductForm = ({ onSubmit, error }) => {
                 category_id: '',
                 image_url: '',
             });
+            setUploadedImages([]);
         } catch (error) {
             console.error('Error creating product:', error);
         }
     };
-    
+
     return (
         <form onSubmit={handleFormSubmit}>
             <Grid container spacing={2}>
@@ -130,6 +161,26 @@ const CreateProductForm = ({ onSubmit, error }) => {
                         onChange={handleChange}
                     />
                 </Grid>
+
+                {uploadedImages.map((imageUrl, index) => (
+                    <Grid item xs={12} key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                        <img
+                            src={imageUrl}
+                            alt={`Uploaded ${index}`}
+                            style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px' }}
+                        />
+                        <IconButton onClick={() => handleViewImage(imageUrl)} color="primary">
+                            <VisibilityIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteImage(imageUrl)} color="secondary">
+                            <DeleteIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDownloadImage(imageUrl)}>
+                            <DownloadIcon />
+                        </IconButton>
+                    </Grid>
+                ))}
+
                 <Grid item xs={12}>
                     <Button type="submit" fullWidth variant="contained" color="primary">
                         Create Product
