@@ -20,7 +20,6 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Routes with MainLayout */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
