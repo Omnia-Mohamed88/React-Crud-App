@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Button } from '@mui/material';
 import { useFormik } from 'formik';
-import updateCategorySchema from 'features/Categories/Schema/updateCategorySchema';
+import updateCategorySchema from 'features/Category/Schemas/updateCategorySchema';
 
 const UpdateForm = ({ category, onSubmit }) => {
   const formik = useFormik({

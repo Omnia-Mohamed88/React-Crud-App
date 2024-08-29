@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Box, Button } from '@mui/material';
 import { getCategories } from 'services/categoryServices';
 import { updateProduct } from 'services/productServices';
-import UpdateProductForm from 'features/Products/forms/UpdateProductForm';
+import UpdateProductForm from 'features/Product/forms/UpdateProductForm';
 
 const UpdateProduct = ({ open, onClose, product, onUpdate }) => {
   const [categories, setCategories] = useState([]);

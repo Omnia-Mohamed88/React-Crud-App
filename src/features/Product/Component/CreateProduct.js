@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import CreateProductForm from 'features/Products/forms/CreateProductForm';
+import CreateProductForm from 'features/Product/forms/CreateProductForm';
 import { createProduct } from 'services/productServices';
 import Swal from 'sweetalert2';
 

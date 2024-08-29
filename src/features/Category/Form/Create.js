@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Typography, Input } from '@mui/material';
-import { createCategorySchema } from 'features/Categories/Schema/createCategorySchema';
+import { createCategorySchema } from 'features/Category/Schemas/createCategorySchema';
 
 const CreateForm = ({ onSubmit, error }) => {
   const formik = useFormik({

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReusableModal from 'components/ReusableModal';
-import UpdateForm from 'features/Categories/Form/Update';
+import UpdateForm from 'features/Category/Form/Update';
 import { updateCategory } from 'services/categoryServices';
 
 

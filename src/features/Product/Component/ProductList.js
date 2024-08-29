@@ -5,7 +5,7 @@ import { Container, Paper, CircularProgress, Typography } from '@mui/material';
 import ConfirmationModal from 'components/ConfirmationModal';
 import PaginationComponent from 'components/PaginationComponent';
 import Swal from 'sweetalert2';
-import UpdateProduct from 'features/Products/Component/UpdateProduct';  
+import UpdateProduct from 'features/Product/Component/UpdateProduct';  
 import axios from 'axios';
 
 const ProductList = () => {

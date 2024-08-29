@@ -7,7 +7,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { getCategories } from 'services/categoryServices';
 import { uploadImage, deleteImage } from 'services/productServices';
-import { createProductSchema } from 'features/Products/schema/createProductSchema'; 
+import { createProductSchema } from 'features/Product/schema/createProductSchema'; 
 
 const CreateProductForm = ({ onSubmit, serverErrors }) => {
     const [categories, setCategories] = useState([]);

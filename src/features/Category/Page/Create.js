@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateCategory from 'features/Categories/Component/Create';
+import CreateCategory from 'features/Category/Component/Create';
 
 const CreateCategoryPage = () => {
   return (

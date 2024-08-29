@@ -2,7 +2,7 @@ import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-mui';
 import { Button, Box } from '@mui/material';
-import registerSchema from 'features/Register/schema/registerSchema';
+import registerSchema from 'features/Registeration/schema/registerSchema';
 
 const RegisterForm = ({ onSubmit, formErrors }) => {
   const initialValues = {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import CreateForm from 'features/Categories/Form/Create';
+import CreateForm from 'features/Category/Form/Create';
 import { createCategory } from 'services/categoryServices';
 
 import Swal from 'sweetalert2';

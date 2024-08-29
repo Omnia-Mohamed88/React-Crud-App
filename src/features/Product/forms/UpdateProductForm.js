@@ -4,7 +4,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useFormik } from 'formik';
-import { updateProductSchema } from 'features/Products/schema/updateProductSchema';
+import { updateProductSchema } from 'features/Product/schema/updateProductSchema';
 import { uploadImage, deleteImage } from 'services/productServices';
 
 const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {

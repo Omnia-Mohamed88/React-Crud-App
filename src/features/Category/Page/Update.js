@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCategoryById } from 'services/categoryServices';
-import Update from 'features/Categories/Component/Update';
+import Update from 'features/Category/Component/Update';
 
 const UpdateCategoryPage = () => {
   const { id } = useParams();

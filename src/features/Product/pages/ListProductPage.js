@@ -1,9 +1,9 @@
 import React from 'react';
-import List from 'features/Categories/Component/List';
-import ReusableButton from 'components/ReusableButton';
+import ProductList from 'features/Product/Component/ProductList'; 
+import ReusableButton from 'components/ReusableButton'; 
 import { Box, Typography } from '@mui/material';
 
-const ListCategoryPage = () => {
+const ListProductPage = () => {
   return (
     <Box 
       display="flex" 
@@ -14,17 +14,17 @@ const ListCategoryPage = () => {
       p={2}
     >
       <Typography variant="h3" gutterBottom>
-        Category List
+        Product List
       </Typography>
       <ReusableButton
-        label="Create Category"
-        to="/categories/create"
+        label="Create Product"
+        to="/products/create"
         variant="contained"
         color="primary"
       />
-      <List />
+      <ProductList />
     </Box>
   );
 };
 
-export default ListCategoryPage;
+export default ListProductPage;
