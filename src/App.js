@@ -2,19 +2,19 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from 'context/AuthContext';
 import ProtectedRoute from 'components/ProtectedRoute';
-import Create from 'features/categories/pages/Create';
-import Update from 'features/categories/pages/Update';
-import List from 'features/categories/pages/List';
+import Create from 'features/Categories/Page/Create';
+import Update from 'features/Categories/Page/Update';
+import List from 'features/Categories/Page/List';
 import Home from 'pages/Home';
-import ListProductPage from 'features/products/pages/ListProductPage';
-import CreateProductPage from 'features/products/pages/CreateProductPage';
-import LoginPage from 'features/login/pages/LoginPage';
-import RegisterPage from 'features/register/pages/RegisterPage';
-import RequestResetPage from 'features/reset_password/pages/RequestResetPage';
+import ListProductPage from 'features/Products/pages/ListProductPage';
+import CreateProductPage from 'features/Products/pages/CreateProductPage';
+import LoginPage from 'features/Login/Page/Login';
+import RegisterPage from 'features/Register/pages/RegisterPage';
+import RequestResetPage from 'features/ResetPassword/pages/RequestResetPage';
 import UnauthorizedPage from 'pages/UnauthorizedPage';
 import MainLayout from 'layouts/MainLayout';  
 import AdminLayout from 'layouts/AdminLayout';  
-
+import ResetPasswordPage from 'features/ResetPassword/pages/ResetPasswordPage';
 function App() {
   return (
     <AuthProvider>
@@ -26,6 +26,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/request-reset" element={<RequestResetPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+
           </Route>
 
           {/* Protected routes with AdminLayout for admin and superadmin roles */}

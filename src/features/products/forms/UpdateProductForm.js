@@ -4,10 +4,10 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useFormik } from 'formik';
-import { updateProductSchema } from 'features/products/schema/updateProductSchema';
+import { updateProductSchema } from 'features/Products/schema/updateProductSchema';
 import { uploadImage, deleteImage } from 'services/productServices';
 
-const UpdateProductForm = ({ product, categories, onSubmit }) => {
+const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedImages, setUploadedImages] = useState(product.attachments || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,8 +85,8 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
         label="Title"
         value={formik.values.title}
         onChange={formik.handleChange}
-        error={formik.touched.title && Boolean(formik.errors.title)}
-        helperText={formik.touched.title && formik.errors.title}
+        error={formik.touched.title && Boolean(formik.errors.title || serverErrors.title)}
+        helperText={formik.touched.title && (formik.errors.title || serverErrors.title)}
         margin="normal"
       />
       <TextField
@@ -96,8 +96,8 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
         label="Description"
         value={formik.values.description}
         onChange={formik.handleChange}
-        error={formik.touched.description && Boolean(formik.errors.description)}
-        helperText={formik.touched.description && formik.errors.description}
+        error={formik.touched.description && Boolean(formik.errors.description || serverErrors.description)}
+        helperText={formik.touched.description && (formik.errors.description || serverErrors.description)}
         margin="normal"
       />
       <TextField
@@ -108,8 +108,8 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
         type="number"
         value={formik.values.price}
         onChange={formik.handleChange}
-        error={formik.touched.price && Boolean(formik.errors.price)}
-        helperText={formik.touched.price && formik.errors.price}
+        error={formik.touched.price && Boolean(formik.errors.price || serverErrors.price)}
+        helperText={formik.touched.price && (formik.errors.price || serverErrors.price)}
         margin="normal"
       />
       <TextField
@@ -120,8 +120,8 @@ const UpdateProductForm = ({ product, categories, onSubmit }) => {
         label="Category"
         value={formik.values.category_id}
         onChange={formik.handleChange}
-        error={formik.touched.category_id && Boolean(formik.errors.category_id)}
-        helperText={formik.touched.category_id && formik.errors.category_id}
+        error={formik.touched.category_id && Boolean(formik.errors.category_id || serverErrors.category_id)}
+        helperText={formik.touched.category_id && (formik.errors.category_id || serverErrors.category_id)}
         margin="normal"
       >
         {categories.map((category) => (

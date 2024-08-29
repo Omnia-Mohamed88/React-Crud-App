@@ -28,18 +28,16 @@ const Home = () => {
     }
   };
 
-
   const fetchProducts = async (page = 1, searchTerm = '', categoryId = '') => {
     try {
       const response = await getProducts(page, searchTerm, categoryId);
       setProducts(response.data);
-      setMeta(response.meta);
+      setMeta(response.pagination); 
     } catch (error) {
       console.error('Error fetching products:', error);
     }
   };
 
-  
   const handleSearch = () => {
     setIsSearching(true);
     setPage(1); 

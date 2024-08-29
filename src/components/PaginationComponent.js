@@ -8,8 +8,8 @@ const PaginationComponent = ({ meta, onPageChange }) => {
 
   return (
     <Pagination
-      count={meta.last_page || 1}
-      page={meta.current_page || 1}
+      count={meta.total_pages || 1}  
+      page={meta.current_page || 1}  
       onChange={handlePageChange}
       renderItem={(item) => (
         <PaginationItem {...item} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateProduct from 'features/products/components/CreateProduct';
+import CreateProduct from 'features/Products/Component/CreateProduct';
 
 const CreateProductPage = () => {
   return (

@@ -7,9 +7,9 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { getCategories } from 'services/categoryServices';
 import { uploadImage, deleteImage } from 'services/productServices';
-import { createProductSchema } from 'features/products/schema/createProductSchema'; 
+import { createProductSchema } from 'features/Products/schema/createProductSchema'; 
 
-const CreateProductForm = ({ onSubmit, error }) => {
+const CreateProductForm = ({ onSubmit, serverErrors }) => {
     const [categories, setCategories] = useState([]);
     const [uploadedImages, setUploadedImages] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,8 +103,8 @@ const CreateProductForm = ({ onSubmit, error }) => {
                                 fullWidth
                                 label="Title"
                                 required
-                                error={touched.title && Boolean(errors.title)}
-                                helperText={touched.title && errors.title}
+                                error={touched.title && (Boolean(errors.title) || Boolean(serverErrors.title))}
+                                helperText={touched.title && (errors.title || serverErrors.title)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -115,8 +115,8 @@ const CreateProductForm = ({ onSubmit, error }) => {
                                 as={TextField}
                                 fullWidth
                                 label="Description"
-                                error={touched.description && Boolean(errors.description)}
-                                helperText={touched.description && errors.description}
+                                error={touched.description && (Boolean(errors.description) || Boolean(serverErrors.description))}
+                                helperText={touched.description && (errors.description || serverErrors.description)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -129,8 +129,8 @@ const CreateProductForm = ({ onSubmit, error }) => {
                                 label="Price"
                                 type="number"
                                 required
-                                error={touched.price && Boolean(errors.price)}
-                                helperText={touched.price && errors.price}
+                                error={touched.price && (Boolean(errors.price) || Boolean(serverErrors.price))}
+                                helperText={touched.price && (errors.price || serverErrors.price)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -142,7 +142,7 @@ const CreateProductForm = ({ onSubmit, error }) => {
                                     name="category_id"
                                     as={Select}
                                     label="Category"
-                                    error={touched.category_id && Boolean(errors.category_id)}
+                                    error={touched.category_id && (Boolean(errors.category_id) || Boolean(serverErrors.category_id))}
                                 >
                                     <MenuItem value="">
                                         <em>None</em>
@@ -153,23 +153,22 @@ const CreateProductForm = ({ onSubmit, error }) => {
                                         </MenuItem>
                                     ))}
                                 </Field>
-                                {touched.category_id && errors.category_id && (
-                                    <div style={{ color: 'red' }}>{errors.category_id}</div>
+                                {touched.category_id && (errors.category_id || serverErrors.category_id) && (
+                                    <div style={{ color: 'red' }}>{errors.category_id || serverErrors.category_id}</div>
                                 )}
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                        <input
-                                    type="file"
-                                    name="images"
-                                    accept="image/*"
-                                    onChange={(event) => handleImageUpload(event, setFieldValue)}
-                                    multiple
-                                />
-                                {touched.image_url && errors.image_url && (
-                                    <div style={{ color: 'red' }}>{errors.image_url}</div>
-                                )}
-
+                            <input
+                                type="file"
+                                name="images"
+                                accept="image/*"
+                                onChange={(event) => handleImageUpload(event, setFieldValue)}
+                                multiple
+                            />
+                            {touched.image_url && (errors.image_url || serverErrors.image_url) && (
+                                <div style={{ color: 'red' }}>{errors.image_url || serverErrors.image_url}</div>
+                            )}
                         </Grid>
 
                         {uploadedImages.map((imageUrl, index) => (
