@@ -22,9 +22,32 @@ export const resetPassword = async (email, password, password_confirmation, toke
   }
 };
 
-export const register = async (name, email, password, password_confirmation) => {
+// export const register = async (name, email, password, password_confirmation) => {
+//   try {
+//     const response = await axios.post(`${API_URL}/register`, { name, email, password, password_confirmation });
+//     return response.data;
+//   } catch (error) {
+//     throw new Error(error.response?.data?.message || 'Network Error');
+//   }
+// };
+
+
+// export const register = async (userData) => {
+//   try {
+//     const response = await axios.post(`${API_URL}/register`, userData);  
+//     return response.data;
+//   } catch (error) {
+//     throw new Error(error.response?.data?.message || 'Network Error');
+//   }
+// };
+export const register = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, { name, email, password, password_confirmation });
+    const response = await axios.post(`${API_URL}/register`, userData);
+    const { token, user } = response.data;
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Network Error');

@@ -11,7 +11,12 @@ const Register = () => {
 
   const handleRegister = async (values) => {
     try {
-      await register(values.name, values.email, values.password, values.password_confirmation);
+      const response = await register(values);  
+      const { token, user } = response; 
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
       Swal.fire({
         position: 'top-end',
         icon: 'success',
@@ -19,9 +24,16 @@ const Register = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate('/login');
-    } catch (errors) {
-      setFormErrors(errors); 
+
+      navigate('/');
+    } catch (error) {
+      setFormErrors(error.response?.data?.errors || {});
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: error.response?.data?.message || 'An error occurred during registration.',
+      });
     }
   };
 

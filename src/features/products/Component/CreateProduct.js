@@ -29,9 +29,17 @@ const CreateProduct = () => {
     } catch (err) {
       console.error('Error creating product:', err);
       setSuccess('');
-      
-      if (err.response && err.response.data && err.response.data.errors) {
-        setServerErrors(err.response.data.errors);
+
+      if (err.response) {
+        const { status, data } = err.response;
+
+        if (status === 400 || status === 422) {
+          setServerErrors(data.errors || { general: 'Validation errors occurred. Please check your input.' });
+        } else if (status === 500) {
+          setServerErrors({ general: 'A server error occurred. Please try again later.' });
+        } else {
+          setServerErrors({ general: 'Failed to create product. Please try again.' });
+        }
       } else {
         setServerErrors({ general: 'Failed to create product. Please try again.' });
       }

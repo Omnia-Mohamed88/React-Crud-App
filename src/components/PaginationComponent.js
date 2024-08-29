@@ -1,19 +1,20 @@
 import React from 'react';
-import { Pagination, PaginationItem } from '@mui/material';
+import { Pagination } from '@mui/material';
 
 const PaginationComponent = ({ meta, onPageChange }) => {
-  const handlePageChange = (event, value) => {
-    onPageChange(value);
+  const totalPages = meta?.total_pages || 1; 
+  const currentPage = meta?.current_page || 1; 
+
+  const handlePageChange = (event, page) => {
+    onPageChange(page);
   };
 
   return (
     <Pagination
-      count={meta.total_pages || 1}  
-      page={meta.current_page || 1}  
+      count={totalPages}
+      page={currentPage}
       onChange={handlePageChange}
-      renderItem={(item) => (
-        <PaginationItem {...item} />
-      )}
+      color="primary"
     />
   );
 };

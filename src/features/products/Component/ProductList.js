@@ -70,23 +70,16 @@ const ProductList = () => {
     setProductToDelete(null);
   };
 
-  // const handleOpenUpdateModal = (id) => {
-  //   const product = products.find(p => p.id === id);
-  //   setProductToUpdate(product);
-  //   setUpdateModalOpen(true);
-  // };
   const handleOpenUpdateModal = async (id) => {
     try {
       const response = await axios.get(`http://localhost:8000/api/products/${id}`);
       const product = response.data.data;
   
-      // Set the product data including the category and attachments
       setProductToUpdate({
         ...product,
-        attachments: product.attachments, // Store the attachments for preview
+        attachments: product.attachments, 
       });
   
-      // Open the modal
       setUpdateModalOpen(true);
     } catch (error) {
       console.error('Failed to fetch product data:', error);
@@ -116,27 +109,25 @@ const ProductList = () => {
           <Typography variant="h6">No products available</Typography>
         ) : (
           <ReusableTable
-  headers={['ID', 'Title', 'Description', 'Price', 'Category', 'Attachments', 'Actions']}
-  rows={products.map((product) => ({
-    id: product.id,
-    title: product.title,
-    description: product.description,
-    price: product.price,
-    category: product.category.title,
-    attachments: product.attachments.map((attachment) => (
-      <img
-        key={attachment.id}
-        src={attachment.file_path}
-        alt={`Attachment ${attachment.id}`}
-        style={{ width: '50px', height: '50px' }}
-      />
-    )),
-  }))}
-  onEdit={handleOpenUpdateModal}
-  onDelete={handleOpenConfirmation}
-/>
-
-
+            headers={['ID', 'Title', 'Description', 'Price', 'Category', 'Attachments', 'Actions']}
+            rows={products.map((product) => ({
+              id: product.id,
+              title: product.title,
+              description: product.description,
+              price: product.price,
+              category: product.category.title,
+              attachments: product.attachments.map((attachment) => (
+                <img
+                  key={attachment.id}
+                  src={attachment.file_path}
+                  alt={`Attachment ${attachment.id}`}
+                  style={{ width: '50px', height: '50px' }}
+                />
+              )),
+            }))}
+            onEdit={handleOpenUpdateModal}
+            onDelete={handleOpenConfirmation}
+          />
         )}
         <ConfirmationModal
           open={confirmationOpen}

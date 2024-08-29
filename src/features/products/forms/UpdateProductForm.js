@@ -27,7 +27,7 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
 
         if (selectedFile) {
           imageUrl = await uploadImage(selectedFile);
-          setUploadedImages([...uploadedImages, imageUrl]);
+          setUploadedImages([...uploadedImages, { file_path: imageUrl }]);
         }
 
         const updatedProduct = {

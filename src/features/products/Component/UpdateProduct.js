@@ -29,7 +29,6 @@ const UpdateProduct = ({ open, onClose, product, onUpdate }) => {
     } catch (error) {
       console.error('Error updating product:', error);
       if (error.response && error.response.data && error.response.data.errors) {
-        // Extract and set server-side errors
         setServerErrors(error.response.data.errors);
       } else {
         setServerErrors({ general: 'Failed to update product. Please try again.' });
