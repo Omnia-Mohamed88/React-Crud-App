@@ -159,15 +159,17 @@ const CreateProductForm = ({ onSubmit, error }) => {
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                            <input
-                                type="file"
-                                name="images"
-                                accept="image/*"
-                                onChange={(event) => handleImageUpload(event, setFieldValue)}
-                            />
-                            {touched.image_url && errors.image_url && (
-                                <div style={{ color: 'red' }}>{errors.image_url}</div>
-                            )}
+                        <input
+                                    type="file"
+                                    name="images"
+                                    accept="image/*"
+                                    onChange={(event) => handleImageUpload(event, setFieldValue)}
+                                    multiple
+                                />
+                                {touched.image_url && errors.image_url && (
+                                    <div style={{ color: 'red' }}>{errors.image_url}</div>
+                                )}
+
                         </Grid>
 
                         {uploadedImages.map((imageUrl, index) => (
