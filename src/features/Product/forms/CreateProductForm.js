@@ -7,7 +7,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { getCategories } from 'services/categoryServices';
 import { uploadImage, deleteImage } from 'services/productServices';
-import { createProductSchema } from 'features/Product/schema/createProductSchema'; 
+import { createProductSchema } from 'features/Product/schema/createProductSchema';
 
 const CreateProductForm = ({ onSubmit, serverErrors }) => {
     const [categories, setCategories] = useState([]);
@@ -28,19 +28,20 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
     }, []);
 
     const handleImageUpload = async (event, setFieldValue) => {
-        const { files } = event.target;
-
-        if (files && files.length > 0) {
+        const files = event.target.files;
+        let imageUrls = [];
+        
+        for (let i = 0; i < files.length; i++) {
             try {
-                let imageUrl = await uploadImage(files[0]);
-                const cleanedImageUrl = imageUrl.replace('http://localhost:8000', '');
-
-                setUploadedImages([...uploadedImages, imageUrl]);
-                setFieldValue('image_url', cleanedImageUrl); 
+                const imageUrl = await uploadImage(files[i]);
+                imageUrls.push(imageUrl.replace('http://localhost:8000', ''));
             } catch (error) {
                 console.error('Failed to upload image:', error);
             }
         }
+
+        setUploadedImages([...uploadedImages, ...imageUrls]);
+        setFieldValue('image_url', imageUrls);
     };
 
     const handleViewImage = (imageUrl) => {
@@ -51,10 +52,11 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
     const handleDeleteImage = async (imageUrl, setFieldValue) => {
         try {
             await deleteImage(imageUrl);
-            setUploadedImages(uploadedImages.filter(image => image !== imageUrl));
-            setFieldValue('image_url', '');
+            const updatedImages = uploadedImages.filter(image => image !== imageUrl);
+            setUploadedImages(updatedImages);
+            setFieldValue('image_url', updatedImages);
         } catch (error) {
-            console.error('Failed to delete image:', error.message);
+            console.error('Failed to delete image:', error);
         }
     };
 
@@ -88,9 +90,9 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 description: '',
                 price: '',
                 category_id: '',
-                image_url: '' 
+                image_url: [] 
             }}
-            validationSchema={createProductSchema} 
+            validationSchema={createProductSchema}
             onSubmit={handleFormSubmit}
         >
             {({ values, errors, touched, handleChange, handleBlur, setFieldValue, isValid }) => (
@@ -103,8 +105,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                 fullWidth
                                 label="Title"
                                 required
-                                error={touched.title && (Boolean(errors.title) || Boolean(serverErrors.title))}
-                                helperText={touched.title && (errors.title || serverErrors.title)}
+                                error={touched.title && (Boolean(errors.title) || Boolean(serverErrors?.title))}
+                                helperText={touched.title && (errors.title || serverErrors?.title)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -115,8 +117,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                 as={TextField}
                                 fullWidth
                                 label="Description"
-                                error={touched.description && (Boolean(errors.description) || Boolean(serverErrors.description))}
-                                helperText={touched.description && (errors.description || serverErrors.description)}
+                                error={touched.description && (Boolean(errors.description) || Boolean(serverErrors?.description))}
+                                helperText={touched.description && (errors.description || serverErrors?.description)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -129,8 +131,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                 label="Price"
                                 type="number"
                                 required
-                                error={touched.price && (Boolean(errors.price) || Boolean(serverErrors.price))}
-                                helperText={touched.price && (errors.price || serverErrors.price)}
+                                error={touched.price && (Boolean(errors.price) || Boolean(serverErrors?.price))}
+                                helperText={touched.price && (errors.price || serverErrors?.price)}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -142,7 +144,7 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                     name="category_id"
                                     as={Select}
                                     label="Category"
-                                    error={touched.category_id && (Boolean(errors.category_id) || Boolean(serverErrors.category_id))}
+                                    error={touched.category_id && (Boolean(errors.category_id) || Boolean(serverErrors?.category_id))}
                                 >
                                     <MenuItem value="">
                                         <em>None</em>
@@ -153,8 +155,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                         </MenuItem>
                                     ))}
                                 </Field>
-                                {touched.category_id && (errors.category_id || serverErrors.category_id) && (
-                                    <div style={{ color: 'red' }}>{errors.category_id || serverErrors.category_id}</div>
+                                {touched.category_id && (errors.category_id || serverErrors?.category_id) && (
+                                    <div style={{ color: 'red' }}>{errors.category_id || serverErrors?.category_id}</div>
                                 )}
                             </FormControl>
                         </Grid>
@@ -166,8 +168,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                                 onChange={(event) => handleImageUpload(event, setFieldValue)}
                                 multiple
                             />
-                            {touched.image_url && (errors.image_url || serverErrors.image_url) && (
-                                <div style={{ color: 'red' }}>{errors.image_url || serverErrors.image_url}</div>
+                            {touched.image_url && (errors.image_url || serverErrors?.image_url) && (
+                                <div style={{ color: 'red' }}>{errors.image_url || serverErrors?.image_url}</div>
                             )}
                         </Grid>
 

@@ -8,7 +8,7 @@ import { updateProductSchema } from 'features/Product/schema/updateProductSchema
 import { uploadImage, deleteImage } from 'services/productServices';
 
 const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadedImages, setUploadedImages] = useState(product.attachments || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,20 +23,21 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        let imageUrl = product.image_url || '';
-
-        if (selectedFile) {
-          imageUrl = await uploadImage(selectedFile);
-          setUploadedImages([...uploadedImages, { file_path: imageUrl }]);
+        const newImageUrls = [];
+        
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const imageUrl = await uploadImage(selectedFiles[i]);
+          newImageUrls.push(imageUrl.replace('http://localhost:8000', ''));
         }
 
         const updatedProduct = {
           ...values,
-          image_url: imageUrl,
-          images: selectedFile ? [selectedFile] : [],
+          image_url: [...uploadedImages, ...newImageUrls], // Merge existing images with newly uploaded images
         };
 
         await onSubmit(updatedProduct);
+        setUploadedImages([...uploadedImages, ...newImageUrls]);
+        setSelectedFiles([]); // Clear selected files after submission
       } catch (error) {
         console.error('Failed to update product:', error);
       } finally {
@@ -46,10 +47,8 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
   });
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
   };
 
   const handleViewImage = (imageUrl) => {
@@ -135,6 +134,7 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         name="images"
         accept="image/*"
         onChange={handleFileChange}
+        multiple
       />
       <Grid container spacing={2}>
         {uploadedImages.map((attachment, index) => (

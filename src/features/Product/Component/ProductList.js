@@ -22,8 +22,8 @@ const ProductList = () => {
     setLoading(true);
     try {
       const response = await getProducts(page);
-      setProducts(response.data);
-      setMeta(response.meta);
+      setProducts(response.data); // Adjusted to response.data based on your Postman response
+      setMeta(response.pagination); // Access pagination directly from response
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {

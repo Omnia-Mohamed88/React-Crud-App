@@ -77,38 +77,30 @@ export const createProduct = async (product) => {
   try {
     setAuthHeader(); 
 
-    let imageUrl = '';
-
-    if (product.images && product.images.length > 0) {
-      imageUrl = await uploadImage(product.images[0]);
-    }
-
     const formData = new FormData();
     formData.append('title', product.title);
     formData.append('description', product.description);
     formData.append('price', product.price);
     formData.append('category_id', product.category_id);
-    formData.append('image_url', product.image_url); 
 
-    if (product.images && product.images.length > 1) {
-      for (let i = 1; i < product.images.length; i++) {
-        formData.append('attachments[]', product.images[i]);
-      }
-    }
+    product.image_url.forEach((url, index) => {
+      formData.append(`image_url[${index}]`, url);
+    });
 
     const response = await axios.post(API_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+
     console.log('Product creation response:', response.data);
     return response.data;
   } catch (error) {
-  console.error('Failed to create product:', error.response ? error.response.data : error.message);
-  throw error;
-}
-
+    console.error('Failed to create product:', error.response ? error.response.data : error.message);
+    throw error;
+  }
 };
+
 
 // Update an existing product by ID
 // export const updateProduct = async (id, data) => {
