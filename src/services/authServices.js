@@ -1,4 +1,7 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+axios.defaults.headers.common['X-CSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -13,14 +16,28 @@ export const sendPasswordResetLink = async (email) => {
 
 export const resetPassword = async (email, password, password_confirmation, token) => {
   try {
-    const response = await axios.post(`${API_URL}/password/reset`, {
-      email, password, password_confirmation, token
+    console.log('Sending data:', { email, password, password_confirmation, token });
+    const response = await axios.post('http://localhost:8000/api/password/reset', {
+      email,
+      password,
+      password_confirmation,
+      token,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
+    console.log('Response:', response.data);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'An error occurred');
+    console.error('Error during API call:', error.response?.data || error.message);
+    throw error;
   }
 };
+
+
+
+
 
 // export const register = async (name, email, password, password_confirmation) => {
 //   try {

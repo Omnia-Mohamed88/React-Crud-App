@@ -1,5 +1,4 @@
-// src/features/reset_password/forms/RequestResetForm.js
-
+// src/features/ResetPassword/forms/RequestResetForm.js
 import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Grid } from '@mui/material';

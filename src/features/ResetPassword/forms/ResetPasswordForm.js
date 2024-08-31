@@ -1,24 +1,46 @@
-// src/features/reset_password/forms/ResetPasswordForm.js
-
 import React from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Grid } from '@mui/material';
+import { TextField, Button, Grid, Typography } from '@mui/material';
 import resetPasswordSchema from 'features/ResetPassword/schema/resetPasswordSchema'; 
 
-const ResetPasswordForm = ({ onSubmit }) => {
+const ResetPasswordForm = ({ onSubmit, token }) => {
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
       password_confirmation: '',
+      token: token || '', 
     },
     validationSchema: resetPasswordSchema,
-    onSubmit,
+    onSubmit: async (values, { setStatus, setErrors }) => {
+      console.log('Formik values:', values); 
+      try {
+        await onSubmit(values.email, values.password, values.password_confirmation, values.token);
+        setStatus({ success: 'Password reset successfully!' });
+      } catch (error) {
+        setStatus({ error: error.message || 'An error occurred during password reset.' });
+        setErrors({ apiError: error.message || 'An error occurred' });
+      }
+    },
   });
 
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={2}>
+        {formik.status && formik.status.success && (
+          <Grid item xs={12}>
+            <Typography variant="h6" color="success.main">
+              {formik.status.success}
+            </Typography>
+          </Grid>
+        )}
+        {formik.status && formik.status.error && (
+          <Grid item xs={12}>
+            <Typography variant="h6" color="error.main">
+              {formik.status.error}
+            </Typography>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <TextField
             fullWidth
@@ -52,7 +74,8 @@ const ResetPasswordForm = ({ onSubmit }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary" fullWidth>
+          <input type="hidden" name="token" value={formik.values.token} />
+          <Button type="submit" variant="contained" color="primary" fullWidth disabled={formik.isSubmitting}>
             Reset Password
           </Button>
         </Grid>
@@ -60,5 +83,6 @@ const ResetPasswordForm = ({ onSubmit }) => {
     </form>
   );
 };
+
 
 export default ResetPasswordForm;
