@@ -1,21 +1,21 @@
-// ProtectedRoute.jsx
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ roles, element }) => {
   const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
+  const location = useLocation();
 
   if (!isAuthenticated()) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  if (roles.includes('admin') && !isAdmin()) {
-    return <Navigate to="/unauthorized" />;
-  }
+  const hasRequiredRole = roles.some(role =>
+    (role === 'admin' && isAdmin()) || (role === 'superadmin' && isSuperAdmin())
+  );
 
-  if (roles.includes('superadmin') && !isSuperAdmin()) {
-    return <Navigate to="/unauthorized" />;
+  if (!hasRequiredRole) {
+    return <Navigate to="/unauthorized" state={{ from: location }} />;
   }
 
   return element;

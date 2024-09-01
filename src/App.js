@@ -1,8 +1,8 @@
 import React from 'react';
-import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
-
 import Create from './features/Category/Page/Create';
 import Update from './features/Category/Page/Update';
 import List from './features/Category/Page/List';
@@ -20,6 +20,9 @@ import ResetPasswordPage from './features/ResetPassword/pages/ResetPasswordPage'
 function AppRoutes() {
   const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
 
+  // Determine the layout based on user role
+  const Layout = isAdmin() || isSuperAdmin() ? AdminLayout : MainLayout;
+
   return (
     <Routes>
       {/* Public Routes */}
@@ -32,7 +35,7 @@ function AppRoutes() {
       <Route path="/" element={<Navigate to={isAuthenticated() ? "/home" : "/login"} />} />
 
       {/* Authenticated Routes */}
-      <Route element={isAdmin() || isSuperAdmin() ? <AdminLayout /> : <MainLayout />}>
+      <Route element={<Layout />}>
         <Route path="/home" element={<Home />} />
 
         {/* Protected Routes */}
@@ -52,7 +55,7 @@ function AppRoutes() {
           <ProtectedRoute roles={['admin', 'superadmin']} element={<CreateProductPage />} />
         } />
 
-        {/* Unauthorized Page */}
+        {/* Unauthorized page */}
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Route>
     </Routes>
@@ -62,7 +65,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter> 
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>
