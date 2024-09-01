@@ -6,46 +6,55 @@ import { login, setAuthHeader } from 'services/authServices';
 import Swal from 'sweetalert2';
 
 const LoginComponent = () => {
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-    const handleLogin = async (values, { setSubmitting, setErrors }) => {
-        try {
-            const data = await login(values.email, values.password);
-            localStorage.setItem('token', data.token);
-            setAuthHeader();
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Logged in successfully!",
-                showConfirmButton: false,
-                timer: 1500,
-            });
-            setTimeout(() => {
-                navigate('/');
-            }, 2000);
-            setError('');
-        } catch (err) {
-            if (err.error && err.error.status === 401) {
-                setError('Invalid email or password.');
-                setErrors({ apiError: 'Invalid email or password' });
-            } else {
-                setError('Login failed. Please try again.');
-            }
-        } finally {
-            setSubmitting(false);
-        }
-    };
+  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+    try {
+      console.log("Attempting login with:", values);
+      const data = await login(values.email, values.password);
 
-    return (
-        <Container component="main" maxWidth="xs">
-            <Paper elevation={3} style={{ padding: '16px' }}>
-                <Typography variant="h5">Login</Typography>
-                {error && <Typography color="error">{error}</Typography>}
-                <LoginForm onSubmit={handleLogin} />
-            </Paper>
-        </Container>
-    );
+      // Store token and user data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user)); // Store user data
+      setAuthHeader();
+
+      const userRole = data.user.role; // Assuming role is part of the user object
+      localStorage.setItem('userRole', userRole); // Store user role
+
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Logged in successfully!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // Redirect to /home after a short delay with role as state
+      setTimeout(() => {
+        console.log("Redirecting to /home");
+        navigate('/home', { state: { role: userRole } });
+      }, 1500);
+
+      setError('');
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Login failed. Please try again.');
+      setErrors({ apiError: err.message || 'Login failed. Please try again.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <Paper elevation={3} style={{ padding: '16px' }}>
+        <Typography variant="h5">Login</Typography>
+        {error && <Typography color="error" align="center">{error}</Typography>}
+        <LoginForm onSubmit={handleLogin} />
+      </Paper>
+    </Container>
+  );
 };
 
 export default LoginComponent;

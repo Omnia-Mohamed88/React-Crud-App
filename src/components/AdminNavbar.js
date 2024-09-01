@@ -1,10 +1,15 @@
-// src/components/AdminNavbar.js
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { logout } from '../services/authServices';
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
+  const { isAdmin, isSuperAdmin } = useAuth();
+  
+  if (!isAdmin() && !isSuperAdmin()) {
+    return null;
+  }
 
   const handleLogout = () => {
     logout();

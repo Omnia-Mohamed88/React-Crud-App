@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getProducts } from 'services/productServices'; 
 import { getCategories } from 'services/categoryServices'; 
 import ReusableCard from 'components/ReusableCard'; 
@@ -6,6 +7,8 @@ import PaginationComponent from 'components/PaginationComponent';
 import { Container, Grid, TextField, Button, Paper, Select, MenuItem } from '@mui/material';
 
 const Home = () => {
+  const location = useLocation();
+  const role = location.state?.role; // Retrieve role from state
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [meta, setMeta] = useState({});

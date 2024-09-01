@@ -1,10 +1,11 @@
+// LoginForm.jsx
 import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Grid, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import loginSchema from 'features/Login/Schema/login';
 
-const LoginForm = ({ onSubmit }) => {
+const LoginForm = ({ onSubmit, error }) => {
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -13,7 +14,13 @@ const LoginForm = ({ onSubmit }) => {
       password: '',
     },
     validationSchema: loginSchema,
-    onSubmit,
+    onSubmit: async (values, { setErrors }) => {
+      try {
+        await onSubmit(values, { setErrors });
+        navigate('/home');
+      } catch (err) {
+      }
+    },
   });
 
   return (
@@ -40,6 +47,13 @@ const LoginForm = ({ onSubmit }) => {
             helperText={formik.touched.password && formik.errors.password}
           />
         </Grid>
+        {error && (
+          <Grid item xs={12}>
+            <Typography color="error" align="center">
+              {error}
+            </Typography>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Button
             variant="contained"
@@ -65,13 +79,13 @@ const LoginForm = ({ onSubmit }) => {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2" align="center">
-            Forget your password ?{' '}
+            Forget your password?{' '}
             <Link 
               component="button" 
               variant="body2" 
               onClick={() => navigate('/request-reset')}
             >
-              request reset 
+              Request reset
             </Link>
           </Typography>
         </Grid>

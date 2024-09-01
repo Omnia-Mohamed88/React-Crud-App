@@ -76,10 +76,13 @@ export const login = async (email, password) => {
     const response = await axios.post(`${API_URL}/login`, { email, password });
     const { token, user } = response.data;
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user)); 
+    localStorage.setItem('user', JSON.stringify(user));
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : new Error('Network Error');
+    if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
+      throw new Error(error.response.data.error.message);
+    }
+    throw new Error('An unexpected error occurred. Please try again later.');
   }
 };
 

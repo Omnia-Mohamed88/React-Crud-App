@@ -1,7 +1,5 @@
-// src/context/AuthContext.js
-
 import React, { createContext, useContext, useState } from 'react';
-import { getAuthToken } from '../services/authServices'; 
+import { getAuthToken } from '../services/authServices';
 
 const AuthContext = createContext();
 
@@ -12,12 +10,16 @@ export const AuthProvider = ({ children }) => {
   });
 
   const isAuthenticated = () => !!getAuthToken();
-  const isAdmin = () => user && user.role === 'admin'; 
-  const isSuperAdmin = () => user && user.role === 'superadmin'; 
+  
+  const hasRole = (role) => user && user.roles && user.roles.includes(role);
+  
+  const isAdmin = () => hasRole('admin'); 
+  const isSuperAdmin = () => hasRole('superadmin'); 
 
   const login = (userData) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token); 
   };
 
   const logout = () => {
