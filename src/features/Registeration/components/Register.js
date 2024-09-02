@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import RegisterForm from 'features/Registeration/forms/RegisterForm';
@@ -27,12 +27,12 @@ const Register = () => {
 
       navigate('/');
     } catch (error) {
-      setFormErrors(error.response?.data?.errors || {});
-      
+      setFormErrors(error.errors || {});
+
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
-        text: error.response?.data?.message || 'An error occurred during registration.',
+        text: error.message || 'An error occurred during registration.',
       });
     }
   };

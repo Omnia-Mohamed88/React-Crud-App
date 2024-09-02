@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getProducts, deleteProduct } from 'services/productServices'; 
 import ReusableTable from 'components/ReusableTable';
 import { Container, Paper, CircularProgress, Typography } from '@mui/material';
@@ -22,8 +22,8 @@ const ProductList = () => {
     setLoading(true);
     try {
       const response = await getProducts(page);
-      setProducts(response.data); // Adjusted to response.data based on your Postman response
-      setMeta(response.pagination); // Access pagination directly from response
+      setProducts(response.data); 
+      setMeta(response.pagination); 
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -39,11 +39,14 @@ const ProductList = () => {
     if (productToDelete !== null) {
       try {
         const response = await deleteProduct(productToDelete);
-
-        if (response.message === 'Product deleted successfully') {
-          await fetchProducts(page); 
+  
+        
+        if (response.status === 200) {
+          await fetchProducts(page);
+          
           setConfirmationOpen(false);
           setProductToDelete(null);
+  
           await Swal.fire({
             position: 'top-end',
             icon: 'success',
@@ -52,13 +55,15 @@ const ProductList = () => {
             timer: 1500
           });
         } else {
-          console.error('Failed to delete product:', response.message);
+          console.error('Failed to delete product:', response.data.message || 'Unknown error');
         }
       } catch (error) {
-        console.error('Error deleting product:', error);
+        console.error('Error deleting product:', error.message);
       }
     }
   };
+  
+  
 
   const handleOpenConfirmation = (id) => {
     setProductToDelete(id);

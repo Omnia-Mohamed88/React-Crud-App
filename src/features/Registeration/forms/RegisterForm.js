@@ -1,4 +1,3 @@
-import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-mui';
 import { Button, Box } from '@mui/material';
@@ -31,7 +30,7 @@ const RegisterForm = ({ onSubmit, formErrors }) => {
               variant="outlined"
               fullWidth
               error={!!formErrors.name}
-              helperText={formErrors.name && formErrors.name[0]}
+              helperText={formErrors.name ? formErrors.name[0] : ''}
             />
           </Box>
           <Box mb={2}>
@@ -42,7 +41,7 @@ const RegisterForm = ({ onSubmit, formErrors }) => {
               variant="outlined"
               fullWidth
               error={!!formErrors.email}
-              helperText={formErrors.email && formErrors.email[0]}
+              helperText={formErrors.email ? formErrors.email[0] : ''}
             />
           </Box>
           <Box mb={2}>
@@ -54,7 +53,7 @@ const RegisterForm = ({ onSubmit, formErrors }) => {
               variant="outlined"
               fullWidth
               error={!!formErrors.password}
-              helperText={formErrors.password && formErrors.password[0]}
+              helperText={formErrors.password ? formErrors.password[0] : ''}
             />
           </Box>
           <Box mb={2}>
@@ -66,7 +65,7 @@ const RegisterForm = ({ onSubmit, formErrors }) => {
               variant="outlined"
               fullWidth
               error={!!formErrors.password_confirmation}
-              helperText={formErrors.password_confirmation && formErrors.password_confirmation[0]}
+              helperText={formErrors.password_confirmation ? formErrors.password_confirmation[0] : ''}
             />
           </Box>
           <Button

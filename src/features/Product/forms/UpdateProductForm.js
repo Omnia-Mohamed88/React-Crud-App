@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TextField, Button, MenuItem, Grid, IconButton } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,12 +32,12 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
 
         const updatedProduct = {
           ...values,
-          image_url: [...uploadedImages, ...newImageUrls], // Merge existing images with newly uploaded images
+          image_url: [...uploadedImages, ...newImageUrls], 
         };
 
         await onSubmit(updatedProduct);
         setUploadedImages([...uploadedImages, ...newImageUrls]);
-        setSelectedFiles([]); // Clear selected files after submission
+        setSelectedFiles([]); 
       } catch (error) {
         console.error('Failed to update product:', error);
       } finally {

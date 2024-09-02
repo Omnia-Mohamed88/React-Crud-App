@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -20,7 +19,6 @@ import ResetPasswordPage from './features/ResetPassword/pages/ResetPasswordPage'
 function AppRoutes() {
   const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
 
-  // Determine the layout based on user role
   const Layout = isAdmin() || isSuperAdmin() ? AdminLayout : MainLayout;
 
   return (

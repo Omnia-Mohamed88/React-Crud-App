@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from 'features/Login/Form/Login';
@@ -14,13 +14,12 @@ const LoginComponent = () => {
       console.log("Attempting login with:", values);
       const data = await login(values.email, values.password);
 
-      // Store token and user data
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user)); // Store user data
+      localStorage.setItem('user', JSON.stringify(data.user)); 
       setAuthHeader();
 
-      const userRole = data.user.role; // Assuming role is part of the user object
-      localStorage.setItem('userRole', userRole); // Store user role
+      const userRole = data.user.role; 
+      localStorage.setItem('userRole', userRole); 
 
       Swal.fire({
         position: "top-end",
@@ -30,7 +29,6 @@ const LoginComponent = () => {
         timer: 1500,
       });
 
-      // Redirect to /home after a short delay with role as state
       setTimeout(() => {
         console.log("Redirecting to /home");
         navigate('/home', { state: { role: userRole } });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getProducts } from 'services/productServices'; 
 import { getCategories } from 'services/categoryServices'; 
@@ -8,7 +8,7 @@ import { Container, Grid, TextField, Button, Paper, Select, MenuItem } from '@mu
 
 const Home = () => {
   const location = useLocation();
-  const role = location.state?.role; // Retrieve role from state
+  const role = location.state?.role; 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [meta, setMeta] = useState({});

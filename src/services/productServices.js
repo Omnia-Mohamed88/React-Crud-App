@@ -35,14 +35,14 @@ export const getProducts = async (page = 1, searchTerm = '', categoryId = '') =>
       params: {
         page,
         per_page: perPage,
-        search: searchTerm || '',
-        category_id: categoryId || '',
+        search: searchTerm,
+        category_id: categoryId,
       },
     });
 
     return response.data;
   } catch (error) {
-    console.error('Failed to fetch products:', error);
+    console.error('Failed to fetch products:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
@@ -50,7 +50,7 @@ export const getProducts = async (page = 1, searchTerm = '', categoryId = '') =>
 export const uploadImage = async (imageFile) => {
   try {
     const formData = new FormData();
-    formData.append('files[]', imageFile); 
+    formData.append('files[]', imageFile);
 
     const response = await axios.post('http://localhost:8000/api/upload-image', formData, {
       headers: {
@@ -58,19 +58,15 @@ export const uploadImage = async (imageFile) => {
       },
     });
 
-    const imageUrl = response.data.urls[0]; 
+    const imageUrl = response.data.urls[0];
     console.log('Upload response:', response.data);
     console.log('Uploaded image URL:', imageUrl);
     return imageUrl;
   } catch (error) {
-    console.error('Failed to upload image:', error.message);
+    console.error('Failed to upload image:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
-
-
-
-
 
 // Create a new product
 export const createProduct = async (product) => {
@@ -101,24 +97,7 @@ export const createProduct = async (product) => {
   }
 };
 
-
 // Update an existing product by ID
-// export const updateProduct = async (id, data) => {
-//   try {
-//     setAuthHeader(); 
-//     const response = await axios.put(`${API_URL}/${id}`, data, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//     console.log('Update product API response:', response.data);
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error updating product:', error);
-//     throw error;
-//   }
-// };
-
 export const updateProduct = async (id, data) => {
   try {
     setAuthHeader(); 
@@ -130,7 +109,7 @@ export const updateProduct = async (id, data) => {
     console.log('Update product API response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Error updating product:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
@@ -140,10 +119,10 @@ export const deleteProduct = async (id) => {
   try {
     setAuthHeader(); 
     const response = await axios.delete(`${API_URL}/${id}`);
-    console.log('Delete product API response:', response.data);
-    return response.data;
+    console.log('Delete product API response:', response);
+    return response;
   } catch (error) {
-    console.error(`Failed to delete product with ID ${id}:`, error.message);
+    console.error(`Failed to delete product with ID ${id}:`, error.response ? error.response.data : error.message);
     throw error;
   }
 };
@@ -156,8 +135,7 @@ export const getProductById = async (id) => {
     console.log('Get product by ID API response:', response.data);
     return response.data.data || {};
   } catch (error) {
-    console.error(`Failed to fetch product by ID ${id}:`, error.message);
+    console.error(`Failed to fetch product by ID ${id}:`, error.response ? error.response.data : error.message);
     return {};
   }
-  
 };
