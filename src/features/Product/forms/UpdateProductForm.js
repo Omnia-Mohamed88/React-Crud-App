@@ -24,19 +24,23 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
       setIsSubmitting(true);
       try {
         const newImageUrls = [];
-        
+
         for (let i = 0; i < selectedFiles.length; i++) {
           const imageUrl = await uploadImage(selectedFiles[i]);
           newImageUrls.push(imageUrl.replace('http://localhost:8000', ''));
         }
 
+        const existingImageUrls = uploadedImages.map(img => 
+          img.file_path.replace('http://localhost:8000', '') 
+        );
+
         const updatedProduct = {
           ...values,
-          image_url: [...uploadedImages, ...newImageUrls], 
+          image_url: [...existingImageUrls, ...newImageUrls],
         };
 
         await onSubmit(updatedProduct);
-        setUploadedImages([...uploadedImages, ...newImageUrls]);
+        setUploadedImages([...uploadedImages, ...newImageUrls.map(url => ({ file_path: `http://localhost:8000${url}` }))]);
         setSelectedFiles([]); 
       } catch (error) {
         console.error('Failed to update product:', error);
@@ -52,21 +56,27 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
   };
 
   const handleViewImage = (imageUrl) => {
-    const viewUrl = imageUrl.startsWith('http://localhost:8000') ? imageUrl : `http://localhost:8000${imageUrl}`;
+    const viewUrl = imageUrl.file_path.startsWith('http://localhost:8000') 
+      ? imageUrl.file_path 
+      : `http://localhost:8000${imageUrl.file_path}`;
+    
     window.open(viewUrl, '_blank');
   };
 
   const handleDeleteImage = async (imageUrl) => {
     try {
-      await deleteImage(imageUrl);
-      setUploadedImages(uploadedImages.filter(image => image.file_path !== imageUrl));
+      await deleteImage(imageUrl.file_path);
+      setUploadedImages(uploadedImages.filter(image => image.file_path !== imageUrl.file_path));
     } catch (error) {
       console.error('Failed to delete image:', error.message);
     }
   };
 
   const handleDownloadImage = (imageUrl) => {
-    const downloadUrl = imageUrl.startsWith('http://localhost:8000') ? imageUrl : `http://localhost:8000${imageUrl}`;
+    const downloadUrl = imageUrl.file_path.startsWith('http://localhost:8000') 
+      ? imageUrl.file_path 
+      : `http://localhost:8000${imageUrl.file_path}`;
+    
     const link = document.createElement('a');
     link.href = downloadUrl;
     link.download = downloadUrl.split('/').pop();
@@ -139,13 +149,13 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
       <Grid container spacing={2}>
         {uploadedImages.map((attachment, index) => (
           <Grid item xs={12} key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            <IconButton onClick={() => handleViewImage(attachment.file_path)} color="primary">
+            <IconButton onClick={() => handleViewImage(attachment)} color="primary">
               <VisibilityIcon />
             </IconButton>
-            <IconButton onClick={() => handleDeleteImage(attachment.file_path)} color="secondary">
+            <IconButton onClick={() => handleDeleteImage(attachment)} color="secondary">
               <DeleteIcon />
             </IconButton>
-            <IconButton onClick={() => handleDownloadImage(attachment.file_path)}>
+            <IconButton onClick={() => handleDownloadImage(attachment)}>
               <DownloadIcon />
             </IconButton>
           </Grid>
