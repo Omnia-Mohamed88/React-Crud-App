@@ -1,17 +1,19 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import UseAuth from "hooks/UseAuth";
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute = ({ roles, element }) => {
-  const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, isSuperAdmin } = UseAuth();
   const location = useLocation();
 
   if (!isAuthenticated()) {
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  const hasRequiredRole = roles.some(role =>
-    (role === 'admin' && isAdmin()) || (role === 'superadmin' && isSuperAdmin())
+  const hasRequiredRole = roles.some(
+    (role) =>
+      (role === "admin" && isAdmin()) ||
+      (role === "superadmin" && isSuperAdmin())
   );
 
   if (!hasRequiredRole) {

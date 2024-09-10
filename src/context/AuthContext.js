@@ -1,38 +1,49 @@
-import React, { createContext, useContext, useState } from 'react';
-import { getAuthToken } from '../services/authServices';
-
-const AuthContext = createContext();
+import axios, { axiosPrivate } from "api/axios";
+import e from "cors";
+import Cookies from "js-cookie";
+import { createContext, useEffect, useState } from "react";
+const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
-  });
+  const [isAuth, setIsAuth] = useState(false);
+  const [auth, setAuth] = useState("");
 
-  const isAuthenticated = () => !!getAuthToken();
-  
-  const hasRole = (role) => user && user.roles && user.roles.includes(role);
-  
-  const isAdmin = () => hasRole('admin'); 
-  const isSuperAdmin = () => hasRole('superadmin'); 
+  let token = Cookies.get("token");
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', userData.token); 
-  };
+  useEffect(() => {
+    async function checkToken() {
+      if (token) {
+        try {
+          const response = await axiosPrivate.get("/profile", {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+          setIsAuth(response.data.status === 200);
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token'); 
-  };
+          setAuth({
+            token: token,
+            isAuth: true,
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        setAuth({
+          token: token,
+          isAuth: false,
+        });
+      }
+    }
+
+    checkToken();
+  }, [token]);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isAdmin, isSuperAdmin, login, logout }}>
+    <AuthContext.Provider value={{ auth, setAuth }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export default AuthContext;

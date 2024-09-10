@@ -1,23 +1,25 @@
-import { useState } from 'react';
-import { TextField, Button, MenuItem, Grid, IconButton } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
-import { useFormik } from 'formik';
-import { updateProductSchema } from 'features/Product/schema/updateProductSchema';
-import { uploadImage, deleteImage } from 'services/productServices';
+import { useState } from "react";
+import { TextField, Button, MenuItem, Grid, IconButton } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from "@mui/icons-material/Download";
+import { useFormik } from "formik";
+import { updateProductSchema } from "features/Product/schema/updateProductSchema";
+import { uploadImage, deleteImage } from "services/productServices";
 
 const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadedImages, setUploadedImages] = useState(product.attachments || []);
+  const [uploadedImages, setUploadedImages] = useState(
+    product.attachments || []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      title: product.title || '',
-      description: product.description || '',
-      price: product.price || '',
-      category_id: product.category.id || '',
+      title: product.title || "",
+      description: product.description || "",
+      price: product.price || "",
+      category_id: product.category.id || "",
     },
     validationSchema: updateProductSchema,
     onSubmit: async (values) => {
@@ -27,11 +29,11 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
 
         for (let i = 0; i < selectedFiles.length; i++) {
           const imageUrl = await uploadImage(selectedFiles[i]);
-          newImageUrls.push(imageUrl.replace('http://localhost:8000', ''));
+          newImageUrls.push(imageUrl.replace("http://localhost:8000", ""));
         }
 
-        const existingImageUrls = uploadedImages.map(img => 
-          img.file_path.replace('http://localhost:8000', '') 
+        const existingImageUrls = uploadedImages.map((img) =>
+          img.file_path.replace("http://localhost:8000", "")
         );
 
         const updatedProduct = {
@@ -40,10 +42,15 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         };
 
         await onSubmit(updatedProduct);
-        setUploadedImages([...uploadedImages, ...newImageUrls.map(url => ({ file_path: `http://localhost:8000${url}` }))]);
-        setSelectedFiles([]); 
+        setUploadedImages([
+          ...uploadedImages,
+          ...newImageUrls.map((url) => ({
+            file_path: `http://localhost:8000${url}`,
+          })),
+        ]);
+        setSelectedFiles([]);
       } catch (error) {
-        console.error('Failed to update product:', error);
+        console.error("Failed to update product:", error);
       } finally {
         setIsSubmitting(false);
       }
@@ -56,30 +63,32 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
   };
 
   const handleViewImage = (imageUrl) => {
-    const viewUrl = imageUrl.file_path.startsWith('http://localhost:8000') 
-      ? imageUrl.file_path 
+    const viewUrl = imageUrl.file_path.startsWith("http://localhost:8000")
+      ? imageUrl.file_path
       : `http://localhost:8000${imageUrl.file_path}`;
-    
-    window.open(viewUrl, '_blank');
+
+    window.open(viewUrl, "_blank");
   };
 
   const handleDeleteImage = async (imageUrl) => {
     try {
       await deleteImage(imageUrl.file_path);
-      setUploadedImages(uploadedImages.filter(image => image.file_path !== imageUrl.file_path));
+      setUploadedImages(
+        uploadedImages.filter((image) => image.file_path !== imageUrl.file_path)
+      );
     } catch (error) {
-      console.error('Failed to delete image:', error.message);
+      console.error("Failed to delete image:", error.message);
     }
   };
 
   const handleDownloadImage = (imageUrl) => {
-    const downloadUrl = imageUrl.file_path.startsWith('http://localhost:8000') 
-      ? imageUrl.file_path 
+    const downloadUrl = imageUrl.file_path.startsWith("http://localhost:8000")
+      ? imageUrl.file_path
       : `http://localhost:8000${imageUrl.file_path}`;
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = downloadUrl.split('/').pop();
+    link.download = downloadUrl.split("/").pop();
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -94,8 +103,13 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         label="Title"
         value={formik.values.title}
         onChange={formik.handleChange}
-        error={formik.touched.title && Boolean(formik.errors.title || serverErrors.title)}
-        helperText={formik.touched.title && (formik.errors.title || serverErrors.title)}
+        error={
+          formik.touched.title &&
+          Boolean(formik.errors.title || serverErrors.title)
+        }
+        helperText={
+          formik.touched.title && (formik.errors.title || serverErrors.title)
+        }
         margin="normal"
       />
       <TextField
@@ -105,8 +119,14 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         label="Description"
         value={formik.values.description}
         onChange={formik.handleChange}
-        error={formik.touched.description && Boolean(formik.errors.description || serverErrors.description)}
-        helperText={formik.touched.description && (formik.errors.description || serverErrors.description)}
+        error={
+          formik.touched.description &&
+          Boolean(formik.errors.description || serverErrors.description)
+        }
+        helperText={
+          formik.touched.description &&
+          (formik.errors.description || serverErrors.description)
+        }
         margin="normal"
       />
       <TextField
@@ -117,8 +137,13 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         type="number"
         value={formik.values.price}
         onChange={formik.handleChange}
-        error={formik.touched.price && Boolean(formik.errors.price || serverErrors.price)}
-        helperText={formik.touched.price && (formik.errors.price || serverErrors.price)}
+        error={
+          formik.touched.price &&
+          Boolean(formik.errors.price || serverErrors.price)
+        }
+        helperText={
+          formik.touched.price && (formik.errors.price || serverErrors.price)
+        }
         margin="normal"
       />
       <TextField
@@ -129,11 +154,17 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         label="Category"
         value={formik.values.category_id}
         onChange={formik.handleChange}
-        error={formik.touched.category_id && Boolean(formik.errors.category_id || serverErrors.category_id)}
-        helperText={formik.touched.category_id && (formik.errors.category_id || serverErrors.category_id)}
+        error={
+          formik.touched.category_id &&
+          Boolean(formik.errors.category_id || serverErrors.category_id)
+        }
+        helperText={
+          formik.touched.category_id &&
+          (formik.errors.category_id || serverErrors.category_id)
+        }
         margin="normal"
       >
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <MenuItem key={category.id} value={category.id}>
             {category.title}
           </MenuItem>
@@ -148,11 +179,22 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
       />
       <Grid container spacing={2}>
         {uploadedImages.map((attachment, index) => (
-          <Grid item xs={12} key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            <IconButton onClick={() => handleViewImage(attachment)} color="primary">
+          <Grid
+            item
+            xs={12}
+            key={index}
+            style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
+          >
+            <IconButton
+              onClick={() => handleViewImage(attachment)}
+              color="primary"
+            >
               <VisibilityIcon />
             </IconButton>
-            <IconButton onClick={() => handleDeleteImage(attachment)} color="secondary">
+            <IconButton
+              onClick={() => handleDeleteImage(attachment)}
+              color="secondary"
+            >
               <DeleteIcon />
             </IconButton>
             <IconButton onClick={() => handleDownloadImage(attachment)}>
@@ -168,7 +210,7 @@ const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
         type="submit"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Updating...' : 'Update Product'}
+        {isSubmitting ? "Updating..." : "Update Product"}
       </Button>
     </form>
   );

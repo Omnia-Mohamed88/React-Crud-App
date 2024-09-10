@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { getProducts, deleteProduct } from 'services/productServices'; 
-import ReusableTable from 'components/ReusableTable';
-import { Container, Paper, CircularProgress, Typography } from '@mui/material';
-import ConfirmationModal from 'components/ConfirmationModal';
-import PaginationComponent from 'components/PaginationComponent';
-import Swal from 'sweetalert2';
-import UpdateProduct from 'features/Product/Component/UpdateProduct';  
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { getProducts, deleteProduct } from "services/productServices";
+import ReusableTable from "components/ReusableTable";
+import { Container, Paper, CircularProgress, Typography } from "@mui/material";
+import ConfirmationModal from "components/ConfirmationModal";
+import PaginationComponent from "components/PaginationComponent";
+import Swal from "sweetalert2";
+import UpdateProduct from "features/Product/Component/UpdateProduct";
+import axios from "axios";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [meta, setMeta] = useState({});
   const [page, setPage] = useState(1);
-  const [confirmationOpen, setConfirmationOpen] = useState(false); 
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [productToUpdate, setProductToUpdate] = useState(null);
@@ -22,10 +22,10 @@ const ProductList = () => {
     setLoading(true);
     try {
       const response = await getProducts(page);
-      setProducts(response.data); 
-      setMeta(response.pagination); 
+      setProducts(response.data);
+      setMeta(response.pagination);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
@@ -39,31 +39,31 @@ const ProductList = () => {
     if (productToDelete !== null) {
       try {
         const response = await deleteProduct(productToDelete);
-  
-        
+
         if (response.status === 200) {
           await fetchProducts(page);
-          
+
           setConfirmationOpen(false);
           setProductToDelete(null);
-  
+
           await Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Product deleted successfully!',
+            position: "top-end",
+            icon: "success",
+            title: "Product deleted successfully!",
             showConfirmButton: false,
-            timer: 1500
+            timer: 1500,
           });
         } else {
-          console.error('Failed to delete product:', response.data.message || 'Unknown error');
+          console.error(
+            "Failed to delete product:",
+            response.data.message || "Unknown error"
+          );
         }
       } catch (error) {
-        console.error('Error deleting product:', error.message);
+        console.error("Error deleting product:", error.message);
       }
     }
   };
-  
-  
 
   const handleOpenConfirmation = (id) => {
     setProductToDelete(id);
@@ -77,20 +77,22 @@ const ProductList = () => {
 
   const handleOpenUpdateModal = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/products/${id}`);
+      const response = await axios.get(
+        `http://localhost:8000/api/products/${id}`
+      );
       const product = response.data.data;
-  
+
       setProductToUpdate({
         ...product,
-        attachments: product.attachments, 
+        attachments: product.attachments,
       });
-  
+
       setUpdateModalOpen(true);
     } catch (error) {
-      console.error('Failed to fetch product data:', error);
+      console.error("Failed to fetch product data:", error);
     }
   };
-  
+
   const handleCloseUpdateModal = () => {
     setUpdateModalOpen(false);
     setProductToUpdate(null);
@@ -107,15 +109,23 @@ const ProductList = () => {
 
   return (
     <Container component="main" maxWidth="md">
-      <Paper elevation={3} style={{ padding: '16px' }}>
+      <Paper elevation={3} style={{ padding: "16px" }}>
         {loading ? (
           <CircularProgress />
         ) : products.length === 0 ? (
           <Typography variant="h6">No products available</Typography>
         ) : (
           <ReusableTable
-            headers={['ID', 'Title', 'Description', 'Price', 'Category', 'Attachments', 'Actions']}
-            rows={products.map((product) => ({
+            headers={[
+              "ID",
+              "Title",
+              "Description",
+              "Price",
+              "Category",
+              "Attachments",
+              "Actions",
+            ]}
+            rows={products?.map((product) => ({
               id: product.id,
               title: product.title,
               description: product.description,
@@ -126,7 +136,7 @@ const ProductList = () => {
                   key={attachment.id}
                   src={attachment.file_path}
                   alt={`Attachment ${attachment.id}`}
-                  style={{ width: '50px', height: '50px' }}
+                  style={{ width: "50px", height: "50px" }}
                 />
               )),
             }))}
