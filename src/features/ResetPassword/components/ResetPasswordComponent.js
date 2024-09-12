@@ -1,13 +1,13 @@
-import { useLocation } from 'react-router-dom'; // Use useLocation to get the token from the query string
+import { useLocation } from 'react-router-dom'; 
 import { Container, Paper, Typography } from '@mui/material';
 import ResetPasswordForm from 'features/ResetPassword/forms/ResetPasswordForm'; 
-import axios from 'api/axios'; // Import Axios directly
+import axios from 'api/axios'; 
 import Swal from 'sweetalert2';
 
 const ResetPasswordComponent = () => {
-  const location = useLocation(); // Get the current location
+  const location = useLocation(); 
   const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get('token'); // Extract the token from the query string
+  const token = queryParams.get('token'); 
 
   const handleResetPassword = async (email, password, password_confirmation) => {
     try {
@@ -15,7 +15,7 @@ const ResetPasswordComponent = () => {
         email,
         password,
         password_confirmation,
-        token, // Include the token in the request payload
+        token, 
       });
       Swal.fire({
         icon: 'success',

@@ -18,17 +18,7 @@ import RequireAuth from 'components/auth/RequireAuth';
 import UseAuth from 'hooks/UseAuth';
 
 function App() {
-  const auth = UseAuth();
-  
-  const isAdminOrSuperAdmin = auth?.roles?.some(role => role.name === "admin" || role.name === "superadmin");
-  const isAuthenticated = !!auth;
-
-  const redirectBasedOnRole = () => {
-    if (isAdminOrSuperAdmin) {
-      return "/categories";  
-    }
-    return "/home";  
-  };
+  const { isAuthenticated, isAdminOrSuperAdmin } = UseAuth();
 
   return (
     <AuthProvider>
@@ -41,10 +31,10 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
 
-          <Route path="/" element={<Navigate to={isAuthenticated ? redirectBasedOnRole() : "/login"} />} />
+          <Route path="/" element={<Navigate to={isAuthenticated ? "/home" : "/login"} />} />
 
           <Route element={<RequireAuth />}>
-            <Route element={isAdminOrSuperAdmin ? <AdminLayout /> : <MainLayout />}>
+            <Route element={isAuthenticated ? (isAdminOrSuperAdmin ? <AdminLayout /> : <MainLayout />) : <MainLayout />}>
               <Route path="/home" element={<Home />} />
               
               {isAdminOrSuperAdmin && (

@@ -8,12 +8,11 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
       email: '',
       password: '',
       password_confirmation: '',
-      token: token || '', // Ensure the token is included in the initial values
+      token: token || '', 
     },
     validationSchema: resetPasswordSchema,
     onSubmit: async (values, { setStatus, setErrors }) => {
       try {
-        // Ensure token is part of the values passed to the submit handler
         await onSubmit(values.email, values.password, values.password_confirmation, values.token);
         setStatus({ success: 'Password reset successfully!' });
       } catch (error) {
