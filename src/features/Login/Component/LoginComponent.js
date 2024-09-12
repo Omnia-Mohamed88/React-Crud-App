@@ -1,54 +1,74 @@
-import { useState } from 'react';
+import { useState , useContext } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from 'features/Login/Form/Login';
-import { login, setAuthHeader } from 'services/authServices';
 import Swal from 'sweetalert2';
+import ServerSideValidationMessagesWrapper from 'components/ServerSideValidationMessagesWrapper';
+import Cookies from 'js-cookie';
+import axios from 'api/axios';
+import AuthContext from 'context/AuthContext';
 
 const LoginComponent = () => {
-  const [error, setError] = useState('');
+  const [serverSideErrors, setServerSideErrors] = useState('');
   const navigate = useNavigate();
+  const { setAuth } = useContext(AuthContext);
 
-  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+  const handleLogin = async (values, { setSubmitting }) => {
+    setServerSideErrors('');
     try {
-      console.log("Attempting login with:", values);
-      const data = await login(values.email, values.password);
+      const { data } = await axios.post('/login', values);
+      const { token, name, email, roles } = data.data;
+      const [role] = roles;
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user)); 
-      setAuthHeader();
-
-      const userRole = data.user.role; 
-      localStorage.setItem('userRole', userRole); 
-
+      Cookies.set('token', token);
+      Cookies.set('name', name);
+      Cookies.set('email', email);
+      Cookies.set('role_id', role.id);
+      Cookies.set('role_name', role.name);
+      // setAuth({ token, roles: [{ id: role.id, name: role.name }], isAuth: true });
+      setAuth({
+        token,
+        roles: roles.map(r => ({ id: r.id, name: r.name })), 
+        isAuth: true,
+      });
       Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Logged in successfully!",
+        position: 'top-end',
+        icon: 'success',
+        title: 'Logged in successfully!',
         showConfirmButton: false,
         timer: 1500,
       });
 
-      setTimeout(() => {
-        console.log("Redirecting to /home");
-        navigate('/home', { state: { role: userRole } });
-      }, 1500);
-
-      setError('');
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.message || 'Login failed. Please try again.');
-      setErrors({ apiError: err.message || 'Login failed. Please try again.' });
+      setTimeout(() => navigate('/home'), 2000);
+    } catch (error) {
+      if (error.response?.status === 422) {
+        setServerSideErrors(error.response.data.errors);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Paper elevation={3} style={{ padding: '16px' }}>
-        <Typography variant="h5">Login</Typography>
-        {error && <Typography color="error" align="center">{error}</Typography>}
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}
+    >
+      <ServerSideValidationMessagesWrapper error={serverSideErrors} />
+      <Paper
+        elevation={3}
+        sx={{ padding: '16px' }}
+      >
+        <Typography variant="h5" sx={{ paddingBottom: '16px' }}>
+          Login
+        </Typography>
         <LoginForm onSubmit={handleLogin} />
       </Paper>
     </Container>

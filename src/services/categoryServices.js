@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { setAuthHeader } from './authServices'; 
 
+
 const API_URL = process.env.REACT_APP_API_URL + '/categories';
 
 export const getCategories = async (page = 1, perPage = 10) => {
+  
   try {
     setAuthHeader(); 
     const response = await axios.get(API_URL, {

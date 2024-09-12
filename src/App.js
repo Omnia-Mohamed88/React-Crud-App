@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext'; 
-import ProtectedRoute from './components/ProtectedRoute'; 
+import { AuthProvider } from './context/AuthContext';
 import Create from './features/Category/Page/Create';
 import Update from './features/Category/Page/Update';
 import List from './features/Category/Page/List';
@@ -12,59 +11,69 @@ import LoginPage from './features/Login/Page/Login';
 import RegisterPage from './features/Registeration/pages/RegisterPage';
 import RequestResetPage from './features/ResetPassword/pages/RequestResetPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
-import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
 import ResetPasswordPage from './features/ResetPassword/pages/ResetPasswordPage';
-
-function AppRoutes() {
-  const { isAuthenticated, isAdmin, isSuperAdmin } = useAuth();
-
-  const Layout = isAdmin() || isSuperAdmin() ? AdminLayout : MainLayout;
-
-  return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/request-reset" element={<RequestResetPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-      {/* Redirect to home if authenticated */}
-      <Route path="/" element={<Navigate to={isAuthenticated() ? "/home" : "/login"} />} />
-
-      {/* Authenticated Routes */}
-      <Route element={<Layout />}>
-        <Route path="/home" element={<Home />} />
-
-        {/* Protected Routes */}
-        <Route path="/categories" element={
-          <ProtectedRoute roles={['admin', 'superadmin']} element={<List />} />
-        } />
-        <Route path="/categories/create" element={
-          <ProtectedRoute roles={['admin', 'superadmin']} element={<Create />} />
-        } />
-        <Route path="/categories/update/:id" element={
-          <ProtectedRoute roles={['admin', 'superadmin']} element={<Update />} />
-        } />
-        <Route path="/products" element={
-          <ProtectedRoute roles={['admin', 'superadmin']} element={<ListProductPage />} />
-        } />
-        <Route path="/products/create" element={
-          <ProtectedRoute roles={['admin', 'superadmin']} element={<CreateProductPage />} />
-        } />
-
-        {/* Unauthorized page */}
-        <Route path="/unauthorized" element={<UnauthorizedPage />} />
-      </Route>
-    </Routes>
-  );
-}
+import RequireNotAuth from 'components/auth/RequireNotAuth';
+import RequireAuth from 'components/auth/RequireAuth';
+import UseAuth from 'hooks/UseAuth';
 
 function App() {
+  const auth = UseAuth();
+  
+  const isAdminOrSuperAdmin = auth?.roles?.some(role => role.name === "admin" || role.name === "superadmin");
+  const isAuthenticated = !!auth;
+
+  console.log("Is Admin or Super Admin: ", isAdminOrSuperAdmin);
+
+  const redirectBasedOnRole = () => {
+    if (isAdminOrSuperAdmin) {
+      return "/categories";  
+    }
+    return "/unauthorized";  
+  };
+
   return (
     <AuthProvider>
-      <BrowserRouter> 
-        <AppRoutes />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<RequireNotAuth />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/request-reset" element={<RequestResetPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+          </Route>
+
+          <Route path="/" element={<Navigate to={isAuthenticated ? redirectBasedOnRole() : "/login"} />} />
+
+          <Route element={<RequireAuth />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/home" element={<Home />} />
+
+              <Route
+                path="/categories"
+                element={isAdminOrSuperAdmin ? <List /> : <Navigate to="/unauthorized" />}
+              />
+              <Route
+                path="/categories/create"
+                element={isAdminOrSuperAdmin ? <Create /> : <Navigate to="/unauthorized" />}
+              />
+              <Route
+                path="/categories/update/:id"
+                element={isAdminOrSuperAdmin ? <Update /> : <Navigate to="/unauthorized" />}
+              />
+              <Route
+                path="/products"
+                element={isAdminOrSuperAdmin ? <ListProductPage /> : <Navigate to="/unauthorized" />}
+              />
+              <Route
+                path="/products/create"
+                element={isAdminOrSuperAdmin ? <CreateProductPage /> : <Navigate to="/unauthorized" />}
+              />
+
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            </Route>
+          </Route>
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );

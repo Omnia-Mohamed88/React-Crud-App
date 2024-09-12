@@ -1,58 +1,67 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { getProducts } from 'services/productServices'; 
-import { getCategories } from 'services/categoryServices'; 
-import ReusableCard from 'components/ReusableCard'; 
-import PaginationComponent from 'components/PaginationComponent';
-import { Container, Grid, TextField, Button, Paper, Select, MenuItem } from '@mui/material';
+import { useEffect, useState } from "react";
+import ReusableCard from "components/ReusableCard";
+import PaginationComponent from "components/PaginationComponent";
+import {
+  Container,
+  Grid,
+  TextField,
+  Button,
+  Paper,
+  Select,
+  MenuItem,
+  Box
+} from "@mui/material";
+import useAxiosPrivate from "hooks/useAxiosPrivate"
 
 const Home = () => {
-  const location = useLocation();
-  const role = location.state?.role; 
+  const axiosPrivate = useAxiosPrivate();
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [meta, setMeta] = useState({});
   const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryId, setCategoryId] = useState("");
 
   useEffect(() => {
-    fetchCategories(); 
+    fetchCategories();
     fetchProducts(page, searchTerm, categoryId);
-  }, [page, searchTerm, categoryId]);
+  }, []);
 
   const fetchCategories = async () => {
     try {
-      const response = await getCategories();
-      setCategories(response.data);
+      const response = await axiosPrivate.get("/categories");
+      setCategories(response?.data?.data?.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
-  const fetchProducts = async (page = 1, searchTerm = '', categoryId = '') => {
+  const fetchProducts = async (page = 1, searchTerm = "", categoryId = "") => {
     try {
-      const response = await getProducts(page, searchTerm, categoryId);
-      setProducts(response.data);
-      setMeta(response.pagination); 
+      const response = await axiosPrivate.get("/products", {
+        params: {
+          page,
+          per_page: 1,
+          search: searchTerm,
+          category_id: categoryId,
+        },
+      });
+      setProducts(response?.data?.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
   const handleSearch = () => {
-    setIsSearching(true);
-    setPage(1); 
+    setPage(1);
     fetchProducts(1, searchTerm, categoryId);
   };
 
   const handleClear = () => {
-    setSearchTerm('');
-    setCategoryId('');
-    setIsSearching(false);
-    setPage(1); 
-    fetchProducts(1); 
+    setSearchTerm("");
+    setCategoryId("");
+    setPage(1);
+    fetchProducts(1);
   };
 
   const handlePageChange = (newPage) => {
@@ -62,7 +71,7 @@ const Home = () => {
 
   return (
     <Container component="main" maxWidth="lg">
-      <Paper elevation={3} style={{ padding: '16px', marginBottom: '16px' }}>
+      <Paper elevation={3} style={{ padding: "16px", marginBottom: "16px" }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -70,22 +79,22 @@ const Home = () => {
               label="Search"
               variant="outlined"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e?.target?.value)}
             />
           </Grid>
           <Grid item xs={12} md={4}>
             <Select
               fullWidth
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+              onChange={(e) => setCategoryId(e?.target?.value)}
               displayEmpty
             >
               <MenuItem value="">
                 <em>All Categories</em>
               </MenuItem>
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.title}
+              {categories?.map((category) => (
+                <MenuItem key={category?.id} value={category?.id}>
+                  {category?.title}
                 </MenuItem>
               ))}
             </Select>
@@ -112,9 +121,9 @@ const Home = () => {
           </Grid>
         </Grid>
       </Paper>
-      
+
       <Grid container spacing={3}>
-        {products.map((product) => (
+        {products?.data?.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product.id}>
             <ReusableCard
               title={product.title}
@@ -124,11 +133,22 @@ const Home = () => {
           </Grid>
         ))}
       </Grid>
-      
-      <PaginationComponent
-        meta={meta}
-        onPageChange={handlePageChange}
-      />
+
+      {products?.data?.length ? (
+        <PaginationComponent
+          meta={products.meta}
+          onPageChange={handlePageChange}
+        />
+      ) : (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          padding={"32px"}
+        >
+          <h1>No Data Found.</h1>
+        </Box>
+      )}
     </Container>
   );
 };

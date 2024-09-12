@@ -1,28 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { getCategories, deleteCategory, getCategoryById } from 'services/categoryServices';
-import ReusableTable from 'components/ReusableTable';
-import { Container, Paper } from '@mui/material';
-import Update from './Update'; 
-import ConfirmationModal from 'components/ConfirmationModal';
-import PaginationComponent from 'components/PaginationComponent';
-
+import { useEffect, useState } from "react";
+import {
+  getCategories,
+  deleteCategory,
+  getCategoryById
+} from "services/categoryServices";
+import ReusableTable from "components/ReusableTable";
+import { Container, Paper } from "@mui/material";
+import Update from "./Update";
+import ConfirmationModal from "components/ConfirmationModal";
+import PaginationComponent from "components/PaginationComponent";
 
 const List = () => {
   const [categories, setCategories] = useState([]);
-  const [meta, setMeta] = useState({}); 
-  const [page, setPage] = useState(1); 
+  const [meta, setMeta] = useState({});
+  const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmationOpen, setConfirmationOpen] = useState(false); 
-  const [categoryToDelete, setCategoryToDelete] = useState(null); 
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const fetchCategories = async (page) => {
     try {
       const response = await getCategories(page);
       setCategories(response.data);
-      setMeta(response.meta); 
+      setMeta(response.meta);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -31,20 +34,20 @@ const List = () => {
   }, [page]);
 
   const handleCategoryUpdate = async () => {
-    await fetchCategories(page); 
-    handleCloseUpdateModal(); 
+    await fetchCategories(page);
+    handleCloseUpdateModal();
   };
 
   const handleDelete = async () => {
     try {
       if (categoryToDelete !== null) {
         await deleteCategory(categoryToDelete);
-        fetchCategories(page); 
+        fetchCategories(page);
         setConfirmationOpen(false);
         setCategoryToDelete(null);
       }
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error("Error deleting category:", error);
     }
   };
 
@@ -54,7 +57,7 @@ const List = () => {
       setSelectedCategory(category);
       setModalOpen(true);
     } catch (error) {
-      console.error('Error fetching category:', error);
+      console.error("Error fetching category:", error);
     }
   };
 
@@ -74,12 +77,12 @@ const List = () => {
   };
 
   const handlePageChange = (newPage) => {
-    setPage(newPage); 
+    setPage(newPage);
   };
 
   return (
     <Container component="main" maxWidth="md">
-      <Paper elevation={3} style={{ padding: '16px' }}>
+      <Paper elevation={3} style={{ padding: "16px" }}>
         {/* <ReusableTable
           headers={['ID', 'Title', 'Image', 'Actions']}
           rows={categories}
@@ -87,22 +90,22 @@ const List = () => {
           onDelete={handleOpenConfirmation} 
         /> */}
         <ReusableTable
-  headers={['ID', 'Title', 'Image', 'Actions']}
-  rows={categories.map((category) => ({
-    id: category.id,
-    title: category.title,
-    attachments: category.attachments
-  }))}
-  onEdit={handleUpdate}
-  onDelete={handleOpenConfirmation} 
-/>
+          headers={["ID", "Title", "Image", "Actions"]}
+          rows={categories?.map((category) => ({
+            id: category.id,
+            title: category.title,
+            attachments: category.attachments,
+          }))}
+          onEdit={handleUpdate}
+          onDelete={handleOpenConfirmation}
+        />
 
         {modalOpen && selectedCategory && (
           <Update
             open={modalOpen}
             onClose={handleCloseUpdateModal}
             category={selectedCategory}
-            onUpdate={handleCategoryUpdate} 
+            onUpdate={handleCategoryUpdate}
           />
         )}
         <ConfirmationModal
@@ -112,7 +115,7 @@ const List = () => {
           title="Confirm Deletion"
           message="Are you sure you want to delete this category?"
         />
-        <PaginationComponent meta={meta} onPageChange={handlePageChange} /> 
+        <PaginationComponent meta={meta} onPageChange={handlePageChange} />
       </Paper>
     </Container>
   );

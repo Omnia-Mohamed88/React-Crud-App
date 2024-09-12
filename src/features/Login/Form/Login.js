@@ -1,27 +1,25 @@
 // LoginForm.jsx
-import { useFormik } from 'formik';
-import { TextField, Button, Grid, Typography, Link } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import loginSchema from 'features/Login/Schema/login';
+import { useFormik } from "formik";
+import { TextField, Button, Grid, Typography, Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import loginSchema from "features/Login/Schema/login";
 
 const LoginForm = ({ onSubmit, error }) => {
   const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
     validationSchema: loginSchema,
     onSubmit: async (values, { setErrors }) => {
       try {
         await onSubmit(values, { setErrors });
-        navigate('/home');
-      } catch (err) {
-      }
+      } catch (err) {}
     },
   });
-  
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={2}>
@@ -30,7 +28,7 @@ const LoginForm = ({ onSubmit, error }) => {
             fullWidth
             label="Email"
             variant="outlined"
-            {...formik.getFieldProps('email')}
+            {...formik.getFieldProps("email")}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
           />
@@ -41,7 +39,7 @@ const LoginForm = ({ onSubmit, error }) => {
             label="Password"
             type="password"
             variant="outlined"
-            {...formik.getFieldProps('password')}
+            {...formik.getFieldProps("password")}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
@@ -61,16 +59,16 @@ const LoginForm = ({ onSubmit, error }) => {
             type="submit"
             disabled={formik.isSubmitting}
           >
-            {formik.isSubmitting ? 'Logging in...' : 'Login'}
+            {formik.isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2" align="center">
-            Don't have an account?{' '}
-            <Link 
-              component="button" 
-              variant="body2" 
-              onClick={() => navigate('/register')}
+            Don't have an account?{" "}
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => navigate("/register")}
             >
               Register
             </Link>
@@ -78,11 +76,11 @@ const LoginForm = ({ onSubmit, error }) => {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2" align="center">
-            Forget your password?{' '}
-            <Link 
-              component="button" 
-              variant="body2" 
-              onClick={() => navigate('/request-reset')}
+            Forget your password?{" "}
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => navigate("/request-reset")}
             >
               Request reset
             </Link>
