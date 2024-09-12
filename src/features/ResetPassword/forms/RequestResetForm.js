@@ -1,5 +1,3 @@
-// src/features/ResetPassword/forms/RequestResetForm.js
-import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Grid } from '@mui/material';
 import requestResetSchema from 'features/ResetPassword/schema/requestResetSchema'; 
@@ -27,8 +25,14 @@ const RequestResetForm = ({ onSubmit }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Send Reset Link
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={formik.isSubmitting} 
+          >
+            {formik.isSubmitting ? 'Sending...' : 'Send Reset Link'} 
           </Button>
         </Grid>
       </Grid>

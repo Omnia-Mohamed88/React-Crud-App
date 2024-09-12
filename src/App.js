@@ -1,5 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Create from './features/Category/Page/Create';
 import Update from './features/Category/Page/Update';
@@ -12,6 +11,7 @@ import RegisterPage from './features/Registeration/pages/RegisterPage';
 import RequestResetPage from './features/ResetPassword/pages/RequestResetPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import AdminLayout from './layouts/AdminLayout';
+import MainLayout from './layouts/MainLayout';  
 import ResetPasswordPage from './features/ResetPassword/pages/ResetPasswordPage';
 import RequireNotAuth from 'components/auth/RequireNotAuth';
 import RequireAuth from 'components/auth/RequireAuth';
@@ -23,13 +23,11 @@ function App() {
   const isAdminOrSuperAdmin = auth?.roles?.some(role => role.name === "admin" || role.name === "superadmin");
   const isAuthenticated = !!auth;
 
-  console.log("Is Admin or Super Admin: ", isAdminOrSuperAdmin);
-
   const redirectBasedOnRole = () => {
     if (isAdminOrSuperAdmin) {
       return "/categories";  
     }
-    return "/unauthorized";  
+    return "/home";  
   };
 
   return (
@@ -46,30 +44,19 @@ function App() {
           <Route path="/" element={<Navigate to={isAuthenticated ? redirectBasedOnRole() : "/login"} />} />
 
           <Route element={<RequireAuth />}>
-            <Route element={<AdminLayout />}>
+            <Route element={isAdminOrSuperAdmin ? <AdminLayout /> : <MainLayout />}>
               <Route path="/home" element={<Home />} />
-
-              <Route
-                path="/categories"
-                element={isAdminOrSuperAdmin ? <List /> : <Navigate to="/unauthorized" />}
-              />
-              <Route
-                path="/categories/create"
-                element={isAdminOrSuperAdmin ? <Create /> : <Navigate to="/unauthorized" />}
-              />
-              <Route
-                path="/categories/update/:id"
-                element={isAdminOrSuperAdmin ? <Update /> : <Navigate to="/unauthorized" />}
-              />
-              <Route
-                path="/products"
-                element={isAdminOrSuperAdmin ? <ListProductPage /> : <Navigate to="/unauthorized" />}
-              />
-              <Route
-                path="/products/create"
-                element={isAdminOrSuperAdmin ? <CreateProductPage /> : <Navigate to="/unauthorized" />}
-              />
-
+              
+              {isAdminOrSuperAdmin && (
+                <>
+                  <Route path="/categories" element={<List />} />
+                  <Route path="/categories/create" element={<Create />} />
+                  <Route path="/categories/update/:id" element={<Update />} />
+                  <Route path="/products" element={<ListProductPage />} />
+                  <Route path="/products/create" element={<CreateProductPage />} />
+                </>
+              )}
+              
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
             </Route>
           </Route>

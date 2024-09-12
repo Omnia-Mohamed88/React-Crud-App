@@ -1,26 +1,26 @@
-// src/features/reset_password/components/RequestResetComponent.js
-
-import React from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import RequestResetForm from 'features/ResetPassword/forms/RequestResetForm'; 
-import { sendPasswordResetLink } from 'services/authServices'; 
 import Swal from 'sweetalert2';
+import axios from 'api/axios'; 
 
 const RequestResetComponent = () => {
   const handleRequestReset = async (values, { setSubmitting, setErrors }) => {
     try {
-      const response = await sendPasswordResetLink(values.email);
+      const response = await axios.post(
+        '/new-password/email', 
+        { email: values.email }
+      );
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: response.message || 'Reset link sent',
+        text: response.data.message || 'Reset link sent',
       });
     } catch (err) {
-      setErrors({ email: err.message || 'An error occurred' });
+      setErrors({ email: err.response?.data.message || 'An error occurred' });
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: err.message || 'An error occurred',
+        text: err.response?.data.message || 'An error occurred',
       });
     } finally {
       setSubmitting(false);

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Grid, Typography } from '@mui/material';
 import resetPasswordSchema from 'features/ResetPassword/schema/resetPasswordSchema'; 
@@ -9,12 +8,12 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
       email: '',
       password: '',
       password_confirmation: '',
-      token: token || '', 
+      token: token || '', // Ensure the token is included in the initial values
     },
     validationSchema: resetPasswordSchema,
     onSubmit: async (values, { setStatus, setErrors }) => {
-      console.log('Formik values:', values); 
       try {
+        // Ensure token is part of the values passed to the submit handler
         await onSubmit(values.email, values.password, values.password_confirmation, values.token);
         setStatus({ success: 'Password reset successfully!' });
       } catch (error) {
@@ -74,7 +73,6 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <input type="hidden" name="token" value={formik.values.token} />
           <Button type="submit" variant="contained" color="primary" fullWidth disabled={formik.isSubmitting}>
             Reset Password
           </Button>
@@ -83,6 +81,5 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
     </form>
   );
 };
-
 
 export default ResetPasswordForm;

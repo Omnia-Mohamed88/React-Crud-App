@@ -1,12 +1,15 @@
-import { Outlet} from "react-router-dom";
-import AdminNavbar from "components/AdminNavbar";
+// layouts/AdminLayout.js
+import { Navigate, Outlet } from 'react-router-dom';
+import AdminNavbar from 'components/AdminNavbar';
+import UseAuth from 'hooks/UseAuth';
 
 const AdminLayout = () => {
-  // const { isAdmin, isSuperAdmin } = UseAuth();
+  const { roles } = UseAuth();
+  const isAdminOrSuperAdmin = roles?.some(role => role.name === "admin" || role.name === "superadmin");
 
-  // if (!isAdmin() && !isSuperAdmin()) {
-  //   return <Navigate to="/unauthorized" />;
-  // }
+  if (!isAdminOrSuperAdmin) {
+    return <Navigate to="/unauthorized" />;
+  }
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>

@@ -1,24 +1,24 @@
-// import AuthContext from "context/AuthContext";
-// import { useContext } from "react";
-// // to use current user
-// const UseAuth = () => {
-//   return useContext(AuthContext);
-// };
-// // export component
+// // import AuthContext from "context/AuthContext";
+// // import { useContext } from "react";
+// // // to use current user
+// // const UseAuth = () => {
+// //   return useContext(AuthContext);
+// // };
+// // // export component
 
-// export default UseAuth;
-// import { useContext } from "react";
-// import AuthContext from "context/AuthContext";
+// // export default UseAuth;
+// // import { useContext } from "react";
+// // import AuthContext from "context/AuthContext";
 
-// const UseAuth = () => {
-//   const auth = useContext(AuthContext);
-//   console.log("Auth Context:", auth); // Debugging line to check auth object
-//   return auth;
-// };
+// // const UseAuth = () => {
+// //   const auth = useContext(AuthContext);
+// //   console.log("Auth Context:", auth); // Debugging line to check auth object
+// //   return auth;
+// // };
 
-// export default UseAuth;
+// // export default UseAuth;
 
-// hooks/UseAuth.js
+// // hooks/UseAuth.js
 
 import { useContext } from 'react';
 import AuthContext from 'context/AuthContext';
@@ -43,4 +43,5 @@ const UseAuth = () => {
 };
 
 export default UseAuth;
+
 
