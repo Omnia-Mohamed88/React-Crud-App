@@ -65,7 +65,10 @@ export const login = async (email, password) => {
 
 export const logout = () => {
   Cookies.remove('token');
-  // localStorage.removeItem('user'); 
+  Cookies.remove('name');
+  Cookies.remove('email');
+  Cookies.remove('role_id');
+  Cookies.remove('role_name');
 };
 
 export const getAuthToken = () => {

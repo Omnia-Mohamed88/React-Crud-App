@@ -1,23 +1,28 @@
-// src/features/reset_password/components/ResetPasswordComponent.js
-
-import React from 'react';
-import { useParams } from 'react-router-dom'; 
+import { useLocation } from 'react-router-dom'; 
 import { Container, Paper, Typography } from '@mui/material';
 import ResetPasswordForm from 'features/ResetPassword/forms/ResetPasswordForm'; 
-import { resetPassword } from 'services/authServices';
+import axios from 'api/axios'; 
 import Swal from 'sweetalert2';
-const ResetPasswordComponent = ({ token }) => {
-  const handleResetPassword = async (email, password, password_confirmation, token) => {
-    console.log('Token in handleResetPassword:', token); 
+
+const ResetPasswordComponent = () => {
+  const location = useLocation(); 
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token'); 
+
+  const handleResetPassword = async (email, password, password_confirmation) => {
     try {
-      const response = await resetPassword(email, password, password_confirmation, token);
+      const response = await axios.post('/new-password/reset', {
+        email,
+        password,
+        password_confirmation,
+        token, 
+      });
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: response.message || 'Password has been reset',
+        text: response.data.message || 'Password has been reset',
       });
     } catch (err) {
-      console.error('Error during password reset:', err);
       Swal.fire({
         icon: 'error',
         title: 'Error',

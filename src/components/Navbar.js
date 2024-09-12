@@ -1,16 +1,27 @@
-import React from 'react';
 import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import { Home as HomeIcon, Login as LoginIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout } from 'services/authServices'; 
+import Cookies from 'js-cookie';
+import UseAuth from 'hooks/UseAuth';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const auth = isAuthenticated(); 
+  const { auth, setAuth } = UseAuth(); 
 
   const handleLogout = () => {
-    logout(); 
-    navigate('/login'); 
+    Cookies.remove('token');
+    Cookies.remove('name');
+    Cookies.remove('email');
+    Cookies.remove('role_id');
+    Cookies.remove('role_name');
+
+    setAuth({
+      token: null,
+      roles: [],
+      isAuth: false,
+    });
+
+    navigate("/login");
   };
 
   return (
@@ -22,7 +33,7 @@ const Navbar = () => {
         <IconButton color="inherit" component={Link} to="/">
           <HomeIcon />
         </IconButton>
-        {!auth ? (
+        {!auth?.isAuth ? ( 
           <IconButton color="inherit" component={Link} to="/login">
             <LoginIcon />
           </IconButton>
