@@ -1,6 +1,8 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "context/AuthContext";
 
 let axiosPrivate = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -10,13 +12,15 @@ let axiosPrivate = axios.create({
 });
 
 const useAxiosPrivate = () => {
+  const navigate = useNavigate();
+  const { setAuth } = useContext(AuthContext);
+
   useEffect(() => {
     const requestInterceptor = axiosPrivate.interceptors.request.use(
       (config) => {
         const token = Cookies.get("token");
         if (token) {
           config.headers["Authorization"] = `Bearer ${token}`;
-          console.log("Request Interceptor:", config);
         }
         return config;
       },
@@ -28,11 +32,19 @@ const useAxiosPrivate = () => {
 
     const responseInterceptor = axiosPrivate.interceptors.response.use(
       (response) => {
-        console.log("Response Interceptor:", response);
         return response;
       },
       (error) => {
-        console.log("Response Interceptor Error:", error);
+        if (error?.response?.status === 401) {
+          setAuth({});
+          Cookies.remove("token");
+          Cookies.remove("name");
+          Cookies.remove("email");
+          Cookies.remove("role_id");
+          Cookies.remove("role_name");
+          navigate("/login");
+          return null;
+        }
         return Promise.reject(error);
       }
     );

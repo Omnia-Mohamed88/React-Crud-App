@@ -1,14 +1,15 @@
+import UseAuth from "hooks/UseAuth";
 import { useLocation, Navigate, Outlet } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const RequireNotAuth = () => {
+  const { auth } = UseAuth();
   const location = useLocation();
-  const token = Cookies.get("token");
-  return token ? (
-    <Navigate to="/home" state={{ from: location }} replace />
-  ) : (
+  return !auth?.token ? (
     <Outlet />
+  ) : (
+    <Navigate to="/home" state={{ from: location }} replace />
   );
 };
 
 export default RequireNotAuth;
+
