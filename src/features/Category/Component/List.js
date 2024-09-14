@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import {
-  getCategories,
-  deleteCategory,
-  getCategoryById
-} from "services/categoryServices";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
 import ReusableTable from "components/ReusableTable";
-import { Container, Paper } from "@mui/material";
+import { Container, Paper, IconButton } from "@mui/material";
 import Update from "./Update";
 import ConfirmationModal from "components/ConfirmationModal";
 import PaginationComponent from "components/PaginationComponent";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const List = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [categories, setCategories] = useState([]);
   const [meta, setMeta] = useState({});
   const [page, setPage] = useState(1);
@@ -21,9 +20,14 @@ const List = () => {
 
   const fetchCategories = async (page) => {
     try {
-      const response = await getCategories(page);
-      setCategories(response.data);
-      setMeta(response.meta);
+      const response = await axiosPrivate.get("/categories", {
+        params: {
+          page,
+          per_page: 10,
+        },
+      });
+      setCategories(response.data.data.data);
+      setMeta(response.data.data.meta);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -41,7 +45,7 @@ const List = () => {
   const handleDelete = async () => {
     try {
       if (categoryToDelete !== null) {
-        await deleteCategory(categoryToDelete);
+        await axiosPrivate.delete(`/categories/${categoryToDelete}`);
         fetchCategories(page);
         setConfirmationOpen(false);
         setCategoryToDelete(null);
@@ -53,8 +57,8 @@ const List = () => {
 
   const handleUpdate = async (id) => {
     try {
-      const category = await getCategoryById(id);
-      setSelectedCategory(category);
+      const response = await axiosPrivate.get(`/categories/${id}`);
+      setSelectedCategory(response.data);
       setModalOpen(true);
     } catch (error) {
       console.error("Error fetching category:", error);
@@ -80,24 +84,34 @@ const List = () => {
     setPage(newPage);
   };
 
+  const rows = categories?.map((category) => ({
+    id: category.id,
+    title: category.title,
+    Image: category.attachments.length
+      ? <img
+          src={category.attachments[0].file_path}
+          alt="Category"
+          style={{ width: 100, height: 100, objectFit: 'cover' }}
+        />
+      : "No Image",
+    Actions: (
+      <>
+        <IconButton onClick={() => handleUpdate(category.id)} color="primary">
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => handleOpenConfirmation(category.id)} color="secondary">
+          <DeleteIcon />
+        </IconButton>
+      </>
+    ),
+  }));
+
   return (
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: "16px" }}>
-        {/* <ReusableTable
-          headers={['ID', 'Title', 'Image', 'Actions']}
-          rows={categories}
-          onEdit={handleUpdate}
-          onDelete={handleOpenConfirmation} 
-        /> */}
         <ReusableTable
           headers={["ID", "Title", "Image", "Actions"]}
-          rows={categories?.map((category) => ({
-            id: category.id,
-            title: category.title,
-            attachments: category.attachments,
-          }))}
-          onEdit={handleUpdate}
-          onDelete={handleOpenConfirmation}
+          rows={rows}
         />
 
         {modalOpen && selectedCategory && (
@@ -108,6 +122,7 @@ const List = () => {
             onUpdate={handleCategoryUpdate}
           />
         )}
+
         <ConfirmationModal
           open={confirmationOpen}
           onClose={handleCloseConfirmation}
@@ -115,6 +130,7 @@ const List = () => {
           title="Confirm Deletion"
           message="Are you sure you want to delete this category?"
         />
+
         <PaginationComponent meta={meta} onPageChange={handlePageChange} />
       </Paper>
     </Container>

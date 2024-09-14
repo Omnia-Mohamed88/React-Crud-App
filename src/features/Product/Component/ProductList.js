@@ -1,179 +1,138 @@
 import { useEffect, useState } from "react";
-import { Container, Paper, CircularProgress, Typography } from "@mui/material";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import ReusableTable from "components/ReusableTable";
 import ConfirmationModal from "components/ConfirmationModal";
 import PaginationComponent from "components/PaginationComponent";
+import { Container, Paper, IconButton, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
-import UpdateProduct from "features/Product/Component/UpdateProduct";
-import axiosPrivate from "hooks/useAxiosPrivate";
-import ReusableTable from "components/ReusableTable";
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [meta, setMeta] = useState({});
-  const [page, setPage] = useState(1);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
-  const [productToUpdate, setProductToUpdate] = useState(null);
-  const [loading, setLoading] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [meta, setMeta] = useState({});
+    const [page, setPage] = useState(1);
+    const [productToDelete, setProductToDelete] = useState(null);
+    const [confirmationOpen, setConfirmationOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const axiosPrivate = useAxiosPrivate();
 
-  const fetchProducts = async (page) => {
-    setLoading(true);
-    try {
-      const response = await axiosPrivate.get(`/products?page=${page}`);
-      setProducts(response.data.data);
-      setMeta(response.data.pagination);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteProduct = async (id) => {
-    try {
-      const response = await axiosPrivate.delete(`/products/${id}`);
-      return response;
-    } catch (error) {
-      console.error("Error deleting product:", error.message);
-      throw error;
-    }
-  };
-
-  const getProduct = async (id) => {
-    try {
-      const response = await axiosPrivate.get(`/products/${id}`);
-      return response.data.data;
-    } catch (error) {
-      console.error("Failed to fetch product data:", error);
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts(page);
-  }, [page]);
-
-  const handleDelete = async () => {
-    if (productToDelete !== null) {
-      try {
-        const response = await deleteProduct(productToDelete);
-
-        if (response.status === 200) {
-          await fetchProducts(page);
-          setConfirmationOpen(false);
-          setProductToDelete(null);
-
-          await Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Product deleted successfully!",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        } else {
-          console.error(
-            "Failed to delete product:",
-            response.data.message || "Unknown error"
-          );
+    const fetchProducts = async (page) => {
+        try {
+            const response = await axiosPrivate.get("/products", {
+                params: {
+                    page,
+                    per_page: 10, 
+                },
+            });
+            setProducts(response.data.data.data); 
+            setMeta(response.data.data.meta); 
+        } catch (error) {
+            console.error("Error fetching products:", error);
         }
-      } catch (error) {
-        console.error("Error deleting product:", error.message);
-      }
-    }
-  };
+    };
 
-  const handleOpenConfirmation = (id) => {
-    setProductToDelete(id);
-    setConfirmationOpen(true);
-  };
+    const handleDelete = async () => {
+        try {
+            if (productToDelete !== null) {
+                await axiosPrivate.delete(`/products/${productToDelete}`);
+                fetchProducts(page); 
+                setConfirmationOpen(false);
+                setProductToDelete(null);
+                Swal.fire('Deleted!', 'The product has been deleted.', 'success');
+            }
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            Swal.fire('Error!', 'Could not delete the product.', 'error');
+        }
+    };
 
-  const handleCloseConfirmation = () => {
-    setConfirmationOpen(false);
-    setProductToDelete(null);
-  };
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchProducts(newPage);
+    };
 
-  const handleOpenUpdateModal = async (id) => {
-    try {
-      const product = await getProduct(id);
-      setProductToUpdate({
-        ...product,
-        attachments: product.attachments,
-      });
-      setUpdateModalOpen(true);
-    } catch (error) {
-      console.error("Failed to fetch product data:", error);
-    }
-  };
+    const handleOpenConfirmation = (id) => {
+        setProductToDelete(id);
+        setConfirmationOpen(true);
+    };
 
-  const handleCloseUpdateModal = () => {
-    setUpdateModalOpen(false);
-    setProductToUpdate(null);
-  };
+    const handleCloseConfirmation = () => {
+        setConfirmationOpen(false);
+        setProductToDelete(null);
+    };
 
-  const handleUpdateSuccess = async () => {
-    await fetchProducts(page);
-    handleCloseUpdateModal();
-  };
+    const handleUpdate = async (id) => {
+        try {
+            const response = await axiosPrivate.get(`/products/${id}`);
+            setSelectedProduct(response.data);
+        } catch (error) {
+            console.error("Error fetching product:", error);
+        }
+    };
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
+    useEffect(() => {
+        fetchProducts(page);
+    }, [page]);
 
-  return (
-    <Container component="main" maxWidth="md">
-      <Paper elevation={3} style={{ padding: "16px" }}>
-        {loading ? (
-          <CircularProgress />
-        ) : products.length === 0 ? (
-          <Typography variant="h6">No products available</Typography>
-        ) : (
-          <ReusableTable
-            headers={[
-              "ID",
-              "Title",
-              "Description",
-              "Price",
-              "Category",
-              "Attachments",
-              "Actions",
-            ]}
-            rows={products.map((product) => ({
-              id: product.id,
-              title: product.title,
-              description: product.description,
-              price: product.price,
-              category: product.category.title,
-              attachments: product.attachments.map((attachment) => (
-                <img
-                  key={attachment.id}
-                  src={attachment.file_path}
-                  alt={`Attachment ${attachment.id}`}
-                  style={{ width: "50px", height: "50px" }}
+    return (
+        <Container component="main" maxWidth="md">
+            <Paper elevation={3} style={{ padding: "16px" }}>
+                <Typography variant="h4" gutterBottom>
+                    Products List
+                </Typography>
+                {products.length > 0 ? (
+                    <ReusableTable
+                        headers={["ID", "Title", "Description", "Price", "Attachments", "Actions"]}
+                        rows={products.map((product) => ({
+                            id: product.id,
+                            title: product.title,
+                            description: product.description,
+                            price: product.price,
+                            attachments: product.attachments.length
+                                ? product.attachments.map((attachment) => (
+                                    <img
+                                        key={attachment.id}
+                                        src={attachment.file_path}
+                                        alt="Attachment"
+                                        style={{ width: 100, height: 100, objectFit: 'cover' }}
+                                    />
+                                  ))
+                                : "No Image",
+                            actions: (
+                                <div>
+                                    <IconButton
+                                        onClick={() => handleUpdate(product.id)}
+                                        color="primary"
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={() => handleOpenConfirmation(product.id)}
+                                        color="secondary"
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            ),
+                        }))}
+                    />
+                ) : (
+                    <Typography>No products found.</Typography>
+                )}
+
+                <PaginationComponent meta={meta} onPageChange={handlePageChange} />
+
+                <ConfirmationModal
+                    open={confirmationOpen}
+                    onClose={handleCloseConfirmation}
+                    onConfirm={handleDelete}
+                    title="Confirm Deletion"
+                    message="Are you sure you want to delete this product?"
                 />
-              )),
-            }))}
-            onEdit={handleOpenUpdateModal}
-            onDelete={handleOpenConfirmation}
-          />
-        )}
-        <ConfirmationModal
-          open={confirmationOpen}
-          onClose={handleCloseConfirmation}
-          onConfirm={handleDelete}
-          title="Confirm Deletion"
-          message="Are you sure you want to delete this product?"
-        />
-        <UpdateProduct
-          open={updateModalOpen}
-          onClose={handleCloseUpdateModal}
-          product={productToUpdate}
-          onUpdate={handleUpdateSuccess}
-        />
-        <PaginationComponent meta={meta} onPageChange={handlePageChange} />
-      </Paper>
-    </Container>
-  );
+            </Paper>
+        </Container>
+    );
 };
 
 export default ProductList;

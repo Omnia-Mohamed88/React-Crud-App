@@ -15,6 +15,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import ResetPasswordPage from "./features/ResetPassword/pages/ResetPasswordPage";
 import RequireNotAuth from "components/auth/RequireNotAuth";
 import RequireAuth from "components/auth/RequireAuth";
+import ConditionalLayout from "layouts/ConditionalLayout";
 
 function App() {
   return (
@@ -31,12 +32,14 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={"*"} />}>
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/home" element={<ConditionalLayout />}>
+              <Route index element={<Home />} /> {/* Home component rendered within ConditionalLayout */}
+            </Route>
 
             <Route
               element={<RequireAuth allowedRoles={["superadmin", "admin"]} />}
             >
               <Route element={<AdminLayout />}>
-                <Route path="/home" element={<Home />} />
 
                 <Route path="/categories" element={<List />} />
                 <Route path="/categories/create" element={<Create />} />
