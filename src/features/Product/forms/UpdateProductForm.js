@@ -1,219 +1,209 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextField, Button, MenuItem, Grid, IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DownloadIcon from "@mui/icons-material/Download";
 import { useFormik } from "formik";
+import PropTypes from 'prop-types';
 import { updateProductSchema } from "features/Product/schema/updateProductSchema";
-import { uploadImage, deleteImage } from "services/productServices";
 
-const UpdateProductForm = ({ product, categories, onSubmit, serverErrors }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadedImages, setUploadedImages] = useState(
-    product.attachments || []
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors }) => {
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [imagesToDelete, setImagesToDelete] = useState([]);
 
-  const formik = useFormik({
-    initialValues: {
-      title: product.title || "",
-      description: product.description || "",
-      price: product.price || "",
-      category_id: product.category.id || "",
-    },
-    validationSchema: updateProductSchema,
-    onSubmit: async (values) => {
-      setIsSubmitting(true);
-      try {
-        const newImageUrls = [];
-
-        for (let i = 0; i < selectedFiles.length; i++) {
-          const imageUrl = await uploadImage(selectedFiles[i]);
-          newImageUrls.push(imageUrl.replace("http://localhost:8000", ""));
+    useEffect(() => {
+        if (product) {
+            setUploadedImages(product.attachments || []);
         }
+    }, [product]);
 
-        const existingImageUrls = uploadedImages.map((img) =>
-          img.file_path.replace("http://localhost:8000", "")
-        );
+    const formik = useFormik({
+        initialValues: {
+            title: product?.title || "",
+            description: product?.description || "",
+            price: product?.price || "",
+            category_id: product?.category?.id || "",
+            attachments: {
+                create: [],
+                delete: []
+            }
+        },
+        validationSchema: updateProductSchema,
+        enableReinitialize: true,
+        onSubmit: async (values) => {
+            const payload = {
+                title: values.title,
+                description: values.description,
+                price: values.price,
+                category_id: values.category_id,
+                attachments: {
+                    create: selectedFiles.map(file => ({
+                        file_path: URL.createObjectURL(file), 
+                        original_name: file.name 
+                    })),
+                    delete: imagesToDelete
+                }
+            };
 
-        const updatedProduct = {
-          ...values,
-          image_url: [...existingImageUrls, ...newImageUrls],
-        };
+            console.log('Payload:', payload);
 
-        await onSubmit(updatedProduct);
-        setUploadedImages([
-          ...uploadedImages,
-          ...newImageUrls.map((url) => ({
-            file_path: `http://localhost:8000${url}`,
-          })),
-        ]);
-        setSelectedFiles([]);
-      } catch (error) {
-        console.error("Failed to update product:", error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-  });
+            try {
+                await onSubmit(payload);
+            } catch (error) {
+                console.error("Failed to update product:", error);
+            }
+        },
+    });
 
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles(files);
-  };
+    const handleFileChange = (event) => {
+        setSelectedFiles((prevFiles) => [...prevFiles, ...Array.from(event.target.files)]);
+    };
 
-  const handleViewImage = (imageUrl) => {
-    const viewUrl = imageUrl.file_path.startsWith("http://localhost:8000")
-      ? imageUrl.file_path
-      : `http://localhost:8000${imageUrl.file_path}`;
+    const handleDeleteNewImage = (index) => {
+        setSelectedFiles((prevFiles) => prevFiles.filter((_, idx) => idx !== index));
+    };
 
-    window.open(viewUrl, "_blank");
-  };
+    const handleDeleteUploadedImage = (img) => {
+        setUploadedImages((prev) => prev.filter((image) => image.file_path !== img.file_path));
+        setImagesToDelete((prev) => [...prev, img.id]); 
+    };
 
-  const handleDeleteImage = async (imageUrl) => {
-    try {
-      await deleteImage(imageUrl.file_path);
-      setUploadedImages(
-        uploadedImages.filter((image) => image.file_path !== imageUrl.file_path)
-      );
-    } catch (error) {
-      console.error("Failed to delete image:", error.message);
-    }
-  };
+    return (
+        <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+            <form onSubmit={formik.handleSubmit}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Title"
+                            name="title"
+                            fullWidth
+                            value={formik.values.title}
+                            onChange={formik.handleChange}
+                            error={formik.touched.title && Boolean(formik.errors.title)}
+                            helperText={formik.touched.title && formik.errors.title}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Description"
+                            name="description"
+                            fullWidth
+                            value={formik.values.description}
+                            onChange={formik.handleChange}
+                            error={formik.touched.description && Boolean(formik.errors.description)}
+                            helperText={formik.touched.description && formik.errors.description}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Price"
+                            name="price"
+                            fullWidth
+                            type="number"
+                            value={formik.values.price}
+                            onChange={formik.handleChange}
+                            error={formik.touched.price && Boolean(formik.errors.price)}
+                            helperText={formik.touched.price && formik.errors.price}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            select
+                            label="Category"
+                            name="category_id"
+                            fullWidth
+                            value={formik.values.category_id}
+                            onChange={formik.handleChange}
+                            error={formik.touched.category_id && Boolean(formik.errors.category_id)}
+                            helperText={formik.touched.category_id && formik.errors.category_id}
+                        >
+                            {categories.length > 0 ? (
+                                categories.map((category) => (
+                                    <MenuItem key={category.id} value={category.id}>
+                                        {category.title}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem value="">No categories available</MenuItem>
+                            )}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <input
+                            type="file"
+                            multiple
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            id="upload-images"
+                        />
+                        <label htmlFor="upload-images">
+                            <Button variant="contained" component="span">
+                                Upload Images
+                            </Button>
+                        </label>
+                        {selectedFiles.length > 0 && (
+                            <div>
+                                {selectedFiles.map((file, index) => (
+                                    <div key={index} style={{ position: 'relative', display: 'inline-block', marginRight: '10px' }}>
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={file.name}
+                                            style={{ width: 100, height: 100, objectFit: 'cover' }}
+                                        />
+                                        <IconButton
+                                            style={{ position: 'absolute', top: 0, right: 0 }}
+                                            onClick={() => handleDeleteNewImage(index)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </Grid>
+                    <Grid item xs={12}>
+                        <div>
+                            {uploadedImages.map((img, index) => (
+                                <div key={index} style={{ position: 'relative', display: 'inline-block', marginRight: '10px' }}>
+                                    <img
+                                        src={img.file_path}
+                                        alt="Attachment"
+                                        style={{ width: 100, height: 100, objectFit: 'cover' }}
+                                    />
+                                    <div style={{ position: 'absolute', bottom: 0, left: 0, display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                        <IconButton onClick={() => window.open(img.file_path, "_blank")}>
+                                            <VisibilityIcon />
+                                        </IconButton>
+                                        <IconButton onClick={() => handleDeleteUploadedImage(img)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button type="submit" variant="contained" color="primary">
+                            Update Product
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+        </div>
+    );
+};
 
-  const handleDownloadImage = (imageUrl) => {
-    const downloadUrl = imageUrl.file_path.startsWith("http://localhost:8000")
-      ? imageUrl.file_path
-      : `http://localhost:8000${imageUrl.file_path}`;
+UpdateProductForm.propTypes = {
+    product: PropTypes.object,
+    categories: PropTypes.array,
+    onSubmit: PropTypes.func.isRequired,
+    serverErrors: PropTypes.object,
+};
 
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = downloadUrl.split("/").pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  return (
-    <form onSubmit={formik.handleSubmit}>
-      <TextField
-        fullWidth
-        id="title"
-        name="title"
-        label="Title"
-        value={formik.values.title}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.title &&
-          Boolean(formik.errors.title || serverErrors.title)
-        }
-        helperText={
-          formik.touched.title && (formik.errors.title || serverErrors.title)
-        }
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        id="description"
-        name="description"
-        label="Description"
-        value={formik.values.description}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.description &&
-          Boolean(formik.errors.description || serverErrors.description)
-        }
-        helperText={
-          formik.touched.description &&
-          (formik.errors.description || serverErrors.description)
-        }
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        id="price"
-        name="price"
-        label="Price"
-        type="number"
-        value={formik.values.price}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.price &&
-          Boolean(formik.errors.price || serverErrors.price)
-        }
-        helperText={
-          formik.touched.price && (formik.errors.price || serverErrors.price)
-        }
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        id="category_id"
-        name="category_id"
-        select
-        label="Category"
-        value={formik.values.category_id}
-        onChange={formik.handleChange}
-        error={
-          formik.touched.category_id &&
-          Boolean(formik.errors.category_id || serverErrors.category_id)
-        }
-        helperText={
-          formik.touched.category_id &&
-          (formik.errors.category_id || serverErrors.category_id)
-        }
-        margin="normal"
-      >
-        {categories?.map((category) => (
-          <MenuItem key={category.id} value={category.id}>
-            {category.title}
-          </MenuItem>
-        ))}
-      </TextField>
-      <input
-        type="file"
-        name="images"
-        accept="image/*"
-        onChange={handleFileChange}
-        multiple
-      />
-      <Grid container spacing={2}>
-        {uploadedImages.map((attachment, index) => (
-          <Grid
-            item
-            xs={12}
-            key={index}
-            style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
-          >
-            <IconButton
-              onClick={() => handleViewImage(attachment)}
-              color="primary"
-            >
-              <VisibilityIcon />
-            </IconButton>
-            <IconButton
-              onClick={() => handleDeleteImage(attachment)}
-              color="secondary"
-            >
-              <DeleteIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDownloadImage(attachment)}>
-              <DownloadIcon />
-            </IconButton>
-          </Grid>
-        ))}
-      </Grid>
-      <Button
-        color="primary"
-        variant="contained"
-        fullWidth
-        type="submit"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "Updating..." : "Update Product"}
-      </Button>
-    </form>
-  );
+UpdateProductForm.defaultProps = {
+    categories: [],
+    product: null,
+    serverErrors: {},
 };
 
 export default UpdateProductForm;

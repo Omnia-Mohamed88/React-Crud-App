@@ -1,28 +1,95 @@
-import React from 'react';
-import ReusableModal from 'components/ReusableModal';
-import UpdateForm from 'features/Category/Form/Update';
-import { updateCategory } from 'services/categoryServices';
+import { useEffect, useState } from "react";
+import { Modal, Box } from "@mui/material";
+import useAxiosPrivate from "hooks/useAxiosPrivate";
+import UpdateCategoryForm from "features/Category/Form/Update";
+import PropTypes from "prop-types";
 
+const CategoryUpdate = ({ categoryId, onClose }) => {
+    const axiosPrivate = useAxiosPrivate();
+    const [category, setCategory] = useState(null);
+    const [serverErrors, setServerErrors] = useState({});
 
-const Update = ({ open, onClose, category, onUpdate }) => {
-  const handleUpdate = async (values) => {
-    try {
-      await updateCategory(category.id, values);
-      onUpdate(); 
-      onClose(); 
-    } catch (error) {
-      console.error('Failed to update category:', error);
-    }
+    useEffect(() => {
+        const fetchCategory = async () => {
+            try {
+                const response = await axiosPrivate.get(`/categories/${categoryId}`);
+                setCategory(response.data.data.data);
+            } catch (error) {
+                console.error("Error fetching category:", error);
+            }
+        };
+
+        fetchCategory();
+    }, [categoryId, axiosPrivate]);
+
+    const handleUpdateCategory = async (values) => {
+      try {
+          const formData = new FormData();
+          Object.keys(values).forEach(key => {
+              if (Array.isArray(values[key])) {
+                  values[key].forEach(item => {
+                      formData.append(`${key}[]`, item);
+                  });
+              } else {
+                  formData.append(key, values[key]);
+              }
+          });
+  
+          const payload = {
+              title: values.title,
+              attachments: {
+                  create: values.attachments.create || [],
+                  delete: values.attachments.delete || []
+              }
+          };
+  
+          console.log('Payload:', payload);
+  
+          await axiosPrivate.put(`/categories/${categoryId}`, payload, {
+              headers: { 'Content-Type': 'application/json' }
+          });
+          onClose();
+      } catch (error) {
+          console.error("Error updating category:", error);
+          if (error.response && error.response.data && error.response.data.errors) {
+              setServerErrors(error.response.data.errors);
+          } else {
+              setServerErrors({ general: 'Failed to update category. Please try again.' });
+          }
+      }
   };
-  return (
-    <ReusableModal
-      open={open}
-      onClose={onClose}
-      title="Update Category"
-    >
-      <UpdateForm category={category} onSubmit={handleUpdate} />
-    </ReusableModal>
-  );
+  
+
+    return (
+        <Modal open={true} onClose={onClose}>
+            <Box
+                sx={{
+                    p: 3,
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    maxWidth: "600px",
+                    maxHeight: "80vh",
+                    overflowY: "auto",
+                    margin: "auto",
+                    marginTop: "5%",
+                    position: "relative",
+                }}
+            >
+                {category && (
+                    <UpdateCategoryForm
+                        category={category}
+                        onSubmit={handleUpdateCategory}
+                        serverErrors={serverErrors}
+                    />
+                )}
+            </Box>
+        </Modal>
+    );
 };
 
-export default Update;
+CategoryUpdate.propTypes = {
+    categoryId: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+};
+
+export default CategoryUpdate;

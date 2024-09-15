@@ -7,6 +7,7 @@ import { Container, Paper, IconButton, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
+import ProductUpdate from "features/Product/Component/UpdateProduct";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -14,7 +15,8 @@ const ProductList = () => {
     const [page, setPage] = useState(1);
     const [productToDelete, setProductToDelete] = useState(null);
     const [confirmationOpen, setConfirmationOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [updateOpen, setUpdateOpen] = useState(false);
+    const [currentProductId, setCurrentProductId] = useState(null);
     const axiosPrivate = useAxiosPrivate();
 
     const fetchProducts = async (page) => {
@@ -22,11 +24,11 @@ const ProductList = () => {
             const response = await axiosPrivate.get("/products", {
                 params: {
                     page,
-                    per_page: 10, 
+                    per_page: 10,
                 },
             });
-            setProducts(response.data.data.data); 
-            setMeta(response.data.data.meta); 
+            setProducts(response.data.data.data);
+            setMeta(response.data.data.meta);
         } catch (error) {
             console.error("Error fetching products:", error);
         }
@@ -36,7 +38,7 @@ const ProductList = () => {
         try {
             if (productToDelete !== null) {
                 await axiosPrivate.delete(`/products/${productToDelete}`);
-                fetchProducts(page); 
+                fetchProducts(page);
                 setConfirmationOpen(false);
                 setProductToDelete(null);
                 Swal.fire('Deleted!', 'The product has been deleted.', 'success');
@@ -62,13 +64,15 @@ const ProductList = () => {
         setProductToDelete(null);
     };
 
-    const handleUpdate = async (id) => {
-        try {
-            const response = await axiosPrivate.get(`/products/${id}`);
-            setSelectedProduct(response.data);
-        } catch (error) {
-            console.error("Error fetching product:", error);
-        }
+    const handleOpenUpdate = (id) => {
+        setCurrentProductId(id);
+        setUpdateOpen(true);
+    };
+
+    const handleCloseUpdate = () => {
+        setUpdateOpen(false);
+        setCurrentProductId(null);
+        fetchProducts(page); 
     };
 
     useEffect(() => {
@@ -103,7 +107,7 @@ const ProductList = () => {
                             actions: (
                                 <div>
                                     <IconButton
-                                        onClick={() => handleUpdate(product.id)}
+                                        onClick={() => handleOpenUpdate(product.id)}
                                         color="primary"
                                     >
                                         <EditIcon />
@@ -131,6 +135,13 @@ const ProductList = () => {
                     title="Confirm Deletion"
                     message="Are you sure you want to delete this product?"
                 />
+
+                {updateOpen && currentProductId && (
+                    <ProductUpdate
+                        productId={currentProductId}
+                        onClose={handleCloseUpdate}
+                    />
+                )}
             </Paper>
         </Container>
     );

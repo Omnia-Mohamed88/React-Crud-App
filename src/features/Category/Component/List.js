@@ -1,148 +1,147 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "hooks/useAxiosPrivate";
 import ReusableTable from "components/ReusableTable";
-import { Container, Paper, IconButton, Grid } from "@mui/material";
-import Update from "./Update";
 import ConfirmationModal from "components/ConfirmationModal";
 import PaginationComponent from "components/PaginationComponent";
+import { Container, Paper, IconButton, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CategoryUpdate from "features/Category/Component/Update";
+import Swal from 'sweetalert2';
 
-const List = () => {
-  const axiosPrivate = useAxiosPrivate();
-  const [categories, setCategories] = useState([]);
-  const [meta, setMeta] = useState({});
-  const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+const CategoryList = () => {
+    const [categories, setCategories] = useState([]);
+    const [meta, setMeta] = useState({});
+    const [page, setPage] = useState(1);
+    const [categoryToDelete, setCategoryToDelete] = useState(null);
+    const [confirmationOpen, setConfirmationOpen] = useState(false);
+    const [updateOpen, setUpdateOpen] = useState(false);
+    const [currentCategoryId, setCurrentCategoryId] = useState(null);
+    const axiosPrivate = useAxiosPrivate();
 
-  const fetchCategories = async (page) => {
-    try {
-      const response = await axiosPrivate.get("/categories", {
-        params: {
-          page,
-          per_page: 10,
-        },
-      });
-      setCategories(response.data.data.data);
-      setMeta(response.data.data.meta);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+    const fetchCategories = async (page) => {
+        try {
+            const response = await axiosPrivate.get("/categories", {
+                params: {
+                    page,
+                    per_page: 10,
+                },
+            });
+            setCategories(response.data.data.data);
+            setMeta(response.data.data.meta);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    };
 
-  useEffect(() => {
-    fetchCategories(page);
-  }, [page]);
+    const handleDelete = async () => {
+        try {
+            if (categoryToDelete !== null) {
+                await axiosPrivate.delete(`/categories/${categoryToDelete}`);
+                fetchCategories(page);
+                setConfirmationOpen(false);
+                setCategoryToDelete(null);
+                Swal.fire('Deleted!', 'The category has been deleted.', 'success');
+            }
+        } catch (error) {
+            console.error("Error deleting category:", error);
+            Swal.fire('Error!', 'Could not delete the category.', 'error');
+        }
+    };
 
-  const handleCategoryUpdate = async () => {
-    await fetchCategories(page);
-    handleCloseUpdateModal();
-  };
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        fetchCategories(newPage);
+    };
 
-  const handleDelete = async () => {
-    try {
-      if (categoryToDelete !== null) {
-        await axiosPrivate.delete(`/categories/${categoryToDelete}`);
-        fetchCategories(page);
+    const handleOpenConfirmation = (id) => {
+        setCategoryToDelete(id);
+        setConfirmationOpen(true);
+    };
+
+    const handleCloseConfirmation = () => {
         setConfirmationOpen(false);
         setCategoryToDelete(null);
-      }
-    } catch (error) {
-      console.error("Error deleting category:", error);
-    }
-  };
+    };
 
-  const handleUpdate = async (id) => {
-    try {
-      const response = await axiosPrivate.get(`/categories/${id}`);
-      setSelectedCategory(response.data);
-      setModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching category:", error);
-    }
-  };
+    const handleOpenUpdate = (id) => {
+        setCurrentCategoryId(id);
+        setUpdateOpen(true);
+    };
 
-  const handleCloseUpdateModal = () => {
-    setModalOpen(false);
-    setSelectedCategory(null);
-  };
+    const handleCloseUpdate = () => {
+        setUpdateOpen(false);
+        setCurrentCategoryId(null);
+        fetchCategories(page); // Refresh the list after updating
+    };
 
-  const handleOpenConfirmation = (id) => {
-    setCategoryToDelete(id);
-    setConfirmationOpen(true);
-  };
+    useEffect(() => {
+        fetchCategories(page);
+    }, [page]);
 
-  const handleCloseConfirmation = () => {
-    setConfirmationOpen(false);
-    setCategoryToDelete(null);
-  };
+    return (
+        <Container component="main" maxWidth="md">
+            <Paper elevation={3} style={{ padding: "16px" }}>
+                <Typography variant="h4" gutterBottom>
+                    Categories List
+                </Typography>
+                {categories.length > 0 ? (
+                    <ReusableTable
+                        headers={["ID", "Title", "Image", "Actions"]}
+                        rows={categories.map((category) => ({
+                            id: category.id,
+                            title: category.title,
+                            Image: category.attachments.length ? (
+                                <img
+                                    src={category.attachments[0].file_path}
+                                    alt="Category"
+                                    style={{ width: 100, height: 100, objectFit: 'cover' }}
+                                />
+                            ) : (
+                                "No Image"
+                            ),
+                            Actions: (
+                                <div>
+                                    <IconButton
+                                        onClick={() => handleOpenUpdate(category.id)}
+                                        color="primary"
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={() => handleOpenConfirmation(category.id)}
+                                        color="secondary"
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            ),
+                        }))}
+                    />
+                ) : (
+                    <Typography>No categories found.</Typography>
+                )}
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
-  };
+                <PaginationComponent meta={meta} onPageChange={handlePageChange} />
 
-  const rows = categories?.map((category) => ({
-    id: category.id,
-    title: category.title,
-    Images: category.attachments.length ? (
-      <Grid container spacing={1}>
-        {category.attachments.map((attachment, index) => (
-          <Grid item key={index}>
-            <img
-              src={attachment.file_path}
-              alt={`Attachment ${index + 1}`}
-              style={{ width: 100, height: 100, objectFit: 'cover' }}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    ) : (
-      "No Images"
-    ),
-    Actions: (
-      <>
-        <IconButton onClick={() => handleUpdate(category.id)} color="primary">
-          <EditIcon />
-        </IconButton>
-        <IconButton onClick={() => handleOpenConfirmation(category.id)} color="secondary">
-          <DeleteIcon />
-        </IconButton>
-      </>
-    ),
-  }));
+                <ConfirmationModal
+                    open={confirmationOpen}
+                    onClose={handleCloseConfirmation}
+                    onConfirm={handleDelete}
+                    title="Confirm Deletion"
+                    message="Are you sure you want to delete this category?"
+                />
 
-  return (
-    <Container component="main" maxWidth="md">
-      <Paper elevation={3} style={{ padding: "16px" }}>
-        <ReusableTable
-          headers={["ID", "Title", "Images", "Actions"]}
-          rows={rows}
-        />
-
-        {modalOpen && selectedCategory && (
-          <Update
-            open={modalOpen}
-            onClose={handleCloseUpdateModal}
-            category={selectedCategory}
-            onUpdate={handleCategoryUpdate}
-          />
-        )}
-
-        <ConfirmationModal
-          open={confirmationOpen}
-          onClose={handleCloseConfirmation}
-          onConfirm={handleDelete}
-          title="Confirm Deletion"
-          message="Are you sure you want to delete this category?"
-        />
-
-        <PaginationComponent meta={meta} onPageChange={handlePageChange} />
-      </Paper>
-    </Container>
-  );
+                {updateOpen && currentCategoryId && (
+                    <CategoryUpdate
+                        categoryId={currentCategoryId}
+                        onClose={handleCloseUpdate}
+                        onUpdate={fetchCategories}
+                    />
+                )}
+            </Paper>
+        </Container>
+    );
 };
 
-export default List;
+export default CategoryList;
