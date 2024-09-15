@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "hooks/useAxiosPrivate";
 import ReusableTable from "components/ReusableTable";
-import { Container, Paper, IconButton } from "@mui/material";
+import { Container, Paper, IconButton, Grid } from "@mui/material";
 import Update from "./Update";
 import ConfirmationModal from "components/ConfirmationModal";
 import PaginationComponent from "components/PaginationComponent";
@@ -87,13 +87,21 @@ const List = () => {
   const rows = categories?.map((category) => ({
     id: category.id,
     title: category.title,
-    Image: category.attachments.length
-      ? <img
-          src={category.attachments[0].file_path}
-          alt="Category"
-          style={{ width: 100, height: 100, objectFit: 'cover' }}
-        />
-      : "No Image",
+    Images: category.attachments.length ? (
+      <Grid container spacing={1}>
+        {category.attachments.map((attachment, index) => (
+          <Grid item key={index}>
+            <img
+              src={attachment.file_path}
+              alt={`Attachment ${index + 1}`}
+              style={{ width: 100, height: 100, objectFit: 'cover' }}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    ) : (
+      "No Images"
+    ),
     Actions: (
       <>
         <IconButton onClick={() => handleUpdate(category.id)} color="primary">
@@ -110,7 +118,7 @@ const List = () => {
     <Container component="main" maxWidth="md">
       <Paper elevation={3} style={{ padding: "16px" }}>
         <ReusableTable
-          headers={["ID", "Title", "Image", "Actions"]}
+          headers={["ID", "Title", "Images", "Actions"]}
           rows={rows}
         />
 

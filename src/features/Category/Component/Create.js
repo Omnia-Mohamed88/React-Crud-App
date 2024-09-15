@@ -1,35 +1,52 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import CreateForm from 'features/Category/Form/Create';
-import { createCategory } from 'services/categoryServices';
-
+import CreateCategoryForm from 'features/Category/Form/Create'; 
+import useAxiosPrivate from 'hooks/useAxiosPrivate'; 
 import Swal from 'sweetalert2';
 
 const CreateCategory = () => {
-  const [error, setError] = useState('');
+  const [serverErrors, setServerErrors] = useState({});
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const axiosPrivate = useAxiosPrivate(); 
 
-  const handleCreateCategory = async (category) => {
+  const handleCreateCategory = async (formData) => {
+    console.log('Submitting category:', formData);
+
     try {
-      await createCategory(category);
-      setSuccess('Category created successfully!');
-      setError('');
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Category created successfully!",
-        showConfirmButton: false,
-        timer: 1500
+      await axiosPrivate.post('/categories', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setTimeout(() => {
-        navigate('/categories');
-      }, 2000);
+      setSuccess('Category created successfully!');
+      setServerErrors({});
+
+      await Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Category created successfully!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      navigate('/categories');
     } catch (err) {
-      console.error('Failed to create category:', err);
-      setError('Failed to create category. Please try again.');
+      console.error('Error creating category:', err);
       setSuccess('');
+
+      if (err.response) {
+        const { status, data } = err.response;
+
+        if (status === 400 || status === 422) {
+          setServerErrors(data.errors || { general: 'Validation errors occurred. Please check your input.' });
+        } else if (status === 500) {
+          setServerErrors({ general: 'A server error occurred. Please try again later.' });
+        } else {
+          setServerErrors({ general: 'Failed to create category. Please try again.' });
+        }
+      } else {
+        setServerErrors({ general: 'Failed to create category. Please try again.' });
+      }
     }
   };
 
@@ -38,8 +55,7 @@ const CreateCategory = () => {
       <Paper elevation={3} style={{ padding: '16px' }}>
         <Typography variant="h5">Create Category</Typography>
         {success && <Typography color="primary">{success}</Typography>}
-        {error && <Typography color="error">{error}</Typography>}
-        <CreateForm onSubmit={handleCreateCategory} error={error} />
+        <CreateCategoryForm onSubmit={handleCreateCategory} serverErrors={serverErrors} />
       </Paper>
     </Container>
   );

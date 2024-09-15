@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Grid,
   FormControl,
@@ -8,91 +8,97 @@ import {
   Button,
   IconButton,
   TextField,
-} from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DownloadIcon from "@mui/icons-material/Download";
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
-import { getCategories } from "services/categoryServices";
-import { uploadImage, deleteImage } from "services/productServices";
-import { createProductSchema } from "features/Product/schema/createProductSchema";
+} from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
+import { Formik, Form, Field } from 'formik';
+import useAxiosPrivate from 'hooks/useAxiosPrivate'; 
+import axios from 'api/axios'; 
+import { createProductSchema } from 'features/Product/schema/createProductSchema';
 
 const CreateProductForm = ({ onSubmit, serverErrors }) => {
   const [categories, setCategories] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await getCategories();
-        setCategories(result.data || []);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
+  const axiosPrivate = useAxiosPrivate(); 
 
+  useEffect(() => {
     fetchCategories();
   }, []);
 
-  const handleImageUpload = async (event, setFieldValue) => {
-    const files = event.target.files;
-    let imageUrls = [];
-
-    for (let i = 0; i < files.length; i++) {
-      try {
-        const imageUrl = await uploadImage(files[i]);
-        imageUrls.push(imageUrl.replace("http://localhost:8000", ""));
-      } catch (error) {
-        console.error("Failed to upload image:", error);
-      }
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/categories');
+      setCategories(response?.data?.data?.data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
+  };
 
-    setUploadedImages([...uploadedImages, ...imageUrls]);
-    setFieldValue("image_url", imageUrls);
+  const handleImageUpload = async (event, setFieldValue) => {
+    const files = Array.from(event.target.files); 
+  
+    if (files.length === 0) return;  
+    
+    const formData = new FormData();
+    files.forEach((file, index) => formData.append(`files[${index}]`, file));  
+  
+    try {
+      const response = await axiosPrivate.post('/attachments', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+  
+      const { urls } = response.data.data;
+  
+      if (urls && urls.length > 0) {
+        const updatedImages = [...uploadedImages, ...urls];
+        setUploadedImages(updatedImages);
+        setFieldValue('image_url', updatedImages);
+      }
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+    }
   };
 
   const handleViewImage = (imageUrl) => {
-    const viewUrl = imageUrl.startsWith("http://localhost:8000")
-      ? imageUrl
-      : `http://localhost:8000${imageUrl}`;
-    window.open(viewUrl, "_blank");
+    window.open(imageUrl, '_blank');
   };
 
-  const handleDeleteImage = async (imageUrl, setFieldValue) => {
-    try {
-      await deleteImage(imageUrl);
-      const updatedImages = uploadedImages.filter(
-        (image) => image !== imageUrl
-      );
-      setUploadedImages(updatedImages);
-      setFieldValue("image_url", updatedImages);
-    } catch (error) {
-      console.error("Failed to delete image:", error);
-    }
+  const handleDeleteImage = (imageUrl, setFieldValue) => {
+    const updatedImages = uploadedImages.filter((image) => image !== imageUrl);
+    setUploadedImages(updatedImages);
+    setFieldValue('image_url', updatedImages);  
   };
 
   const handleDownloadImage = (imageUrl) => {
-    const downloadUrl = imageUrl.startsWith("http://localhost:8000")
+    const downloadUrl = imageUrl.startsWith('http://localhost:8000')
       ? imageUrl
       : `http://localhost:8000${imageUrl}`;
-    const link = document.createElement("a");
+    
+    const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = downloadUrl.split("/").pop();
+    link.download = downloadUrl.split('/').pop();
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const handleFormSubmit = async (values, { resetForm }) => {
+    const formattedValues = {
+      ...values,
+      attachments: values.image_url.map((url) => ({ file_path: url })),  
+    };
+  
     setIsSubmitting(true);
+  
     try {
-      await onSubmit(values);
+      await onSubmit(formattedValues);  
       resetForm();
-      setUploadedImages([]);
+      setUploadedImages([]);  
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.error('Error creating product:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -101,10 +107,10 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
   return (
     <Formik
       initialValues={{
-        title: "",
-        description: "",
-        price: "",
-        category_id: "",
+        title: '',
+        description: '',
+        price: '',
+        category_id: '',
         image_url: [],
       }}
       validationSchema={createProductSchema}
@@ -128,13 +134,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 fullWidth
                 label="Title"
                 required
-                error={
-                  touched.title &&
-                  (Boolean(errors.title) || Boolean(serverErrors?.title))
-                }
-                helperText={
-                  touched.title && (errors.title || serverErrors?.title)
-                }
+                error={touched.title && Boolean(errors.title)}
+                helperText={touched.title && errors.title}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -145,15 +146,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 as={TextField}
                 fullWidth
                 label="Description"
-                error={
-                  touched.description &&
-                  (Boolean(errors.description) ||
-                    Boolean(serverErrors?.description))
-                }
-                helperText={
-                  touched.description &&
-                  (errors.description || serverErrors?.description)
-                }
+                error={touched.description && Boolean(errors.description)}
+                helperText={touched.description && errors.description}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -166,13 +160,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 label="Price"
                 type="number"
                 required
-                error={
-                  touched.price &&
-                  (Boolean(errors.price) || Boolean(serverErrors?.price))
-                }
-                helperText={
-                  touched.price && (errors.price || serverErrors?.price)
-                }
+                error={touched.price && Boolean(errors.price)}
+                helperText={touched.price && errors.price}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -184,27 +173,22 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                   name="category_id"
                   as={Select}
                   label="Category"
-                  error={
-                    touched.category_id &&
-                    (Boolean(errors.category_id) ||
-                      Boolean(serverErrors?.category_id))
-                  }
+                  error={touched.category_id && Boolean(errors.category_id)}
                 >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {categories?.map((category) => (
+                  {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.title}
                     </MenuItem>
                   ))}
                 </Field>
-                {touched.category_id &&
-                  (errors.category_id || serverErrors?.category_id) && (
-                    <div style={{ color: "red" }}>
-                      {errors.category_id || serverErrors?.category_id}
-                    </div>
-                  )}
+                {touched.category_id && errors.category_id && (
+                  <div style={{ color: 'red' }}>
+                    {errors.category_id}
+                  </div>
+                )}
               </FormControl>
             </Grid>
             <Grid item xs={12}>
@@ -215,52 +199,36 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 onChange={(event) => handleImageUpload(event, setFieldValue)}
                 multiple
               />
-              {touched.image_url &&
-                (errors.image_url || serverErrors?.image_url) && (
-                  <div style={{ color: "red" }}>
-                    {errors.image_url || serverErrors?.image_url}
-                  </div>
-                )}
-            </Grid>
-
-            {uploadedImages.map((imageUrl, index) => (
-              <Grid
-                item
-                xs={12}
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginTop: "10px",
-                }}
-              >
-                <IconButton
-                  onClick={() => handleViewImage(imageUrl)}
-                  color="primary"
-                >
-                  <VisibilityIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleDeleteImage(imageUrl, setFieldValue)}
-                  color="secondary"
-                >
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDownloadImage(imageUrl)}>
-                  <DownloadIcon />
-                </IconButton>
+              {touched.image_url && errors.image_url && (
+                <div style={{ color: 'red' }}>
+                  {errors.image_url}
+                </div>
+              )}
+              <Grid container spacing={2} style={{ marginTop: '16px' }}>
+                {uploadedImages.map((imageUrl, index) => (
+                  <Grid item key={index}>
+                    <IconButton onClick={() => handleViewImage(imageUrl)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDownloadImage(imageUrl)}>
+                      <DownloadIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteImage(imageUrl, setFieldValue)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-
+            </Grid>
             <Grid item xs={12}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
-                disabled={!isValid || isSubmitting}
+                disabled={isSubmitting || !isValid}
               >
-                {isSubmitting ? "Submitting..." : "Create Product"}
+                {isSubmitting ? 'Submitting...' : 'Submit Product'}
               </Button>
             </Grid>
           </Grid>
