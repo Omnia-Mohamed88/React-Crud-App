@@ -5,7 +5,6 @@ import resetPasswordSchema from 'features/ResetPassword/schema/resetPasswordSche
 const ResetPasswordForm = ({ onSubmit, token }) => {
   const formik = useFormik({
     initialValues: {
-      email: '',
       password: '',
       password_confirmation: '',
       token: token || '', 
@@ -13,7 +12,7 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
     validationSchema: resetPasswordSchema,
     onSubmit: async (values, { setStatus, setErrors }) => {
       try {
-        await onSubmit(values.email, values.password, values.password_confirmation, values.token);
+        await onSubmit(values.password, values.password_confirmation, values.token);
         setStatus({ success: 'Password reset successfully!' });
       } catch (error) {
         setStatus({ error: error.message || 'An error occurred during password reset.' });
@@ -39,16 +38,6 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
             </Typography>
           </Grid>
         )}
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="Email"
-            variant="outlined"
-            {...formik.getFieldProps('email')}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-        </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth

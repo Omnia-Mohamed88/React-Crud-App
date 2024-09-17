@@ -43,10 +43,9 @@ const ResetPasswordComponent = () => {
     }
   }, [token, navigate]);
 
-  const handleResetPassword = async (email, password, password_confirmation) => {
+  const handleResetPassword = async (password, password_confirmation, token) => {
     try {
       const response = await axios.post('/new-password/reset', {
-        email,
         password,
         password_confirmation,
         token, 
@@ -64,6 +63,7 @@ const ResetPasswordComponent = () => {
       }
     }
   };
+  
 
   return (
     <Container component="main" maxWidth="xs">
