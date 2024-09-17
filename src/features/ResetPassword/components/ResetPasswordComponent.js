@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import { Container, Paper, Typography } from '@mui/material';
+import { Container, Paper, Typography, Alert } from '@mui/material';
 import ResetPasswordForm from 'features/ResetPassword/forms/ResetPasswordForm'; 
 import axios from 'api/axios'; 
-import Swal from 'sweetalert2';
 import { useEffect, useState } from 'react';
 
 const ResetPasswordComponent = () => {
@@ -11,6 +10,8 @@ const ResetPasswordComponent = () => {
   const token = queryParams.get('token'); 
   const navigate = useNavigate();
   const [tokenIsValid, setTokenIsValid] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const validateToken = async () => {
@@ -19,10 +20,18 @@ const ResetPasswordComponent = () => {
         
         if (response.status === 200) {
           setTokenIsValid(true); 
+          setError(null); 
         } else {
+          setTokenIsValid(false);
           navigate('/login'); 
         }
       } catch (err) {
+        if (err.response?.status === 422) {
+          setError('The token is invalid or has expired.');
+        } else {
+          setError('An error occurred while validating the token.');
+        }
+        setTokenIsValid(false);
         navigate('/login'); 
       }
     };
@@ -30,11 +39,10 @@ const ResetPasswordComponent = () => {
     if (token) {
       validateToken();
     } else {
-      navigate('/login'); // No token found, redirect to login
+      navigate('/login'); 
     }
   }, [token, navigate]);
 
-  // Handle reset password
   const handleResetPassword = async (email, password, password_confirmation) => {
     try {
       const response = await axios.post('/new-password/reset', {
@@ -43,18 +51,17 @@ const ResetPasswordComponent = () => {
         password_confirmation,
         token, 
       });
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: response.data.message || 'Password has been reset',
-      });
-      navigate('/login'); // Redirect to login after successful password reset
+      setSuccessMessage(response.data.message || 'Password has been reset');
+      setError(null); 
+      navigate('/login');
     } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: err.response?.data?.message || 'An error occurred',
-      });
+      if (err.response?.status === 422) {
+        setError('Please check your inputs and try again.');
+      } else if (err.response?.status === 400) {
+        setError('The request could not be processed.');
+      } else {
+        setError('An error occurred during the reset process.');
+      }
     }
   };
 
@@ -62,6 +69,8 @@ const ResetPasswordComponent = () => {
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} style={{ padding: '16px' }}>
         <Typography variant="h5">Reset Password</Typography>
+        {error && <Alert severity="error">{error}</Alert>}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {tokenIsValid ? (
           <ResetPasswordForm onSubmit={handleResetPassword} token={token} />
         ) : (

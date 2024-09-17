@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Grid,
   FormControl,
@@ -20,6 +20,7 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
   const [uploadedImages, setUploadedImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const axiosPrivate = useAxiosPrivate();
 
@@ -39,6 +40,9 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
   
     try {
       const response = await axiosPrivate.post('/attachments', formData, {
+        headers: {
+        'Content-Type': 'multipart/form-data', 
+      },
       });
   
       const { urls } = response.data.data;
@@ -67,6 +71,9 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
       setFieldValue('attachments.delete', updatedImagesToDelete);
       return updatedImagesToDelete;
     });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';  
+    }
   };
 
   const handleDownloadImage = (imageUrl) => {
@@ -89,8 +96,9 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
         create: values.attachments.create || [],
         delete: imagesToDelete
       },
+      
     };
-  
+
     setIsSubmitting(true);
   
     try {
@@ -203,6 +211,7 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
                 accept="image/*"
                 onChange={(event) => handleImageUpload(event, setFieldValue)}
                 multiple
+                ref={fileInputRef} 
               />
               <Grid container spacing={2} style={{ marginTop: '16px' }}>
                 {uploadedImages
@@ -240,6 +249,7 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
                 disabled={isSubmitting || !isValid}
               >
                 {isSubmitting ? 'Submitting...' : 'Update Product'}
+                
               </Button>
             </Grid>
           </Grid>

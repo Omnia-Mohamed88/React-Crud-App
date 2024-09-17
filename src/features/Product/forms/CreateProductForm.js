@@ -57,10 +57,14 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
         const updatedImages = [...uploadedImages, ...urls];
         setUploadedImages(updatedImages);
         setFieldValue('image_url', updatedImages);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';  
+        }
       }
     } catch (error) {
       console.error('Failed to upload image:', error);
     }
+    
   };
 
   const handleViewImage = (imageUrl) => {
