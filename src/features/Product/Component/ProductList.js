@@ -89,11 +89,11 @@ const ProductList = () => {
                     <ReusableTable
                         headers={["ID", "Title", "Description", "Price", "Category", "Attachments", "Actions"]}
                         rows={products.map((product) => ({
-                            id: product.id,
-                            title: product.title,
-                            description: product.description,
-                            price: product.price,
-                            category: product.category ? product.category.title : "No Category",
+                            id: product?.id,
+                            title: product?.title,
+                            description: product?.description,
+                            price: product?.price,
+                            category: product?.category ? product.category.title : "No Category",
                             attachments: product.attachments.length
                                 ? product.attachments.map((attachment) => (
                                     <img

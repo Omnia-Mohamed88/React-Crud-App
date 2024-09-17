@@ -16,7 +16,6 @@ const CreateCategory = () => {
 
     try {
       await axiosPrivate.post('/categories', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess('Category created successfully!');
       setServerErrors({});
@@ -34,21 +33,21 @@ const CreateCategory = () => {
       console.error('Error creating category:', err);
       setSuccess('');
 
-      if (err.response) {
-        const { status, data } = err.response;
 
-        if (status === 400 || status === 422) {
-          setServerErrors(data.errors || { general: 'Validation errors occurred. Please check your input.' });
-        } else if (status === 500) {
-          setServerErrors({ general: 'A server error occurred. Please try again later.' });
-        } else {
-          setServerErrors({ general: 'Failed to create category. Please try again.' });
-        }
-      } else {
-        setServerErrors({ general: 'Failed to create category. Please try again.' });
-      }
+  if (err.response) {
+    const { status, data } = err.response;
+  
+    if (status === 400) {
+      setServerErrors(data.errors || { general: 'Bad request. Please check your input.' });
+    } else if (status === 422) {
+      setServerErrors(data.errors || { general: 'Validation errors occurred. Please correct them.' });
+    } else if (status === 500) {
+      setServerErrors({ general: 'A server error occurred. Please try again later.' });
+    } else {
+      setServerErrors({ general: 'Failed to create category. Please try again.' });
     }
-  };
+  } 
+}}
 
   return (
     <Container component="main" maxWidth="xs">

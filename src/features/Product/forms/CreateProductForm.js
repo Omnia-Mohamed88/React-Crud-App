@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Grid,
   FormControl,
@@ -23,6 +23,7 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const axiosPrivate = useAxiosPrivate(); 
+  const fileInputRef = useRef(null);  
 
   useEffect(() => {
     fetchCategories();
@@ -69,7 +70,11 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
   const handleDeleteImage = (imageUrl, setFieldValue) => {
     const updatedImages = uploadedImages.filter((image) => image !== imageUrl);
     setUploadedImages(updatedImages);
-    setFieldValue('image_url', updatedImages);  
+    setFieldValue('image_url', updatedImages);
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';  
+    }
   };
 
   const handleDownloadImage = (imageUrl) => {
@@ -197,6 +202,7 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 name="images"
                 accept="image/*"
                 onChange={(event) => handleImageUpload(event, setFieldValue)}
+                ref={fileInputRef} 
                 multiple
               />
               {touched.image_url && errors.image_url && (
@@ -208,6 +214,11 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
                 {uploadedImages.map((imageUrl, index) => (
                   <Grid item key={index}>
                     <IconButton onClick={() => handleViewImage(imageUrl)}>
+                    <img 
+                      src={imageUrl} 
+                      alt={`uploaded ${index}`} 
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                    />
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton onClick={() => handleDownloadImage(imageUrl)}>

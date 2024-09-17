@@ -16,7 +16,6 @@ const CreateProduct = () => {
 
     try {
       await axiosPrivate.post('/products', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess('Product created successfully!');
       setServerErrors({});
@@ -33,22 +32,20 @@ const CreateProduct = () => {
     } catch (err) {
       console.error('Error creating product:', err);
       setSuccess('');
-
       if (err.response) {
         const { status, data } = err.response;
-
-        if (status === 400 || status === 422) {
-          setServerErrors(data.errors || { general: 'Validation errors occurred. Please check your input.' });
+      
+        if (status === 400) {
+          setServerErrors(data.errors || { general: 'Bad request. Please check your input.' });
+        } else if (status === 422) {
+          setServerErrors(data.errors || { general: 'Validation errors occurred. Please correct them.' });
         } else if (status === 500) {
           setServerErrors({ general: 'A server error occurred. Please try again later.' });
         } else {
-          setServerErrors({ general: 'Failed to create product. Please try again.' });
+          setServerErrors({ general: 'Failed to create category. Please try again.' });
         }
-      } else {
-        setServerErrors({ general: 'Failed to create product. Please try again.' });
-      }
-    }
-  };
+      } 
+    }}
 
   return (
     <Container component="main" maxWidth="xs">

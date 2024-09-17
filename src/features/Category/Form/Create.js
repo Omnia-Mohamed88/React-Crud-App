@@ -124,6 +124,11 @@ const CreateCategoryForm = ({ onSubmit, serverErrors }) => {
                   <Grid item key={index}>
                     <IconButton onClick={() => handleViewImage(imageUrl)}>
                       <VisibilityIcon />
+                      <img 
+          src={imageUrl} 
+          alt={`uploaded ${index}`} 
+          style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+        />
                     </IconButton>
                     <IconButton onClick={() => handleDeleteImage(imageUrl, setFieldValue)}>
                       <DeleteIcon />

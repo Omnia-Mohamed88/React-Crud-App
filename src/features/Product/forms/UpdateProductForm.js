@@ -39,7 +39,6 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
   
     try {
       const response = await axiosPrivate.post('/attachments', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
       });
   
       const { urls } = response.data.data;
@@ -210,8 +209,14 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
                   .filter((image) => !imagesToDelete.includes(image.id))
                   .map((image, index) => (
                     <Grid item key={index}>
-                      <IconButton onClick={() => handleViewImage(image.file_path)}>
+                      <IconButton onClick={() => handleViewImage(image)}>
+                      <img 
+                      src={image} 
+                      alt={`uploaded ${index}`} 
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                    />
                         <VisibilityIcon />
+                        
                       </IconButton>
                       <IconButton onClick={() => handleDownloadImage(image.file_path)}>
                         <DownloadIcon />

@@ -19,6 +19,8 @@ const RegisterComponent = () => {
       Cookies.set("token", response.data.data.token);
       Cookies.set("name", response.data.data.name);
       Cookies.set("email", response.data.data.email);
+      Cookies.set("role_id", response.data.data.role_id);
+      Cookies.set("role_name", response.data.data.role_name);
       Swal.fire({
         position: "top-end",
         icon: "success",

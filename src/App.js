@@ -33,7 +33,7 @@ function App() {
           <Route element={<RequireAuth allowedRoles={"*"} />}>
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/home" element={<ConditionalLayout />}>
-              <Route index element={<Home />} /> {/* Home component rendered within ConditionalLayout */}
+              <Route index element={<Home />} /> 
             </Route>
 
             <Route
