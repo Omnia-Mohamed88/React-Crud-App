@@ -1,22 +1,30 @@
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Grid, Typography } from '@mui/material';
-import resetPasswordSchema from 'features/ResetPassword/schema/resetPasswordSchema'; 
+import resetPasswordSchema from 'features/ResetPassword/schema/resetPasswordSchema';
+import ServerSideValidationMessagesWrapper from 'components/ServerSideValidationMessagesWrapper';
 
 const ResetPasswordForm = ({ onSubmit, token }) => {
+  const [serverSideErrors, setServerSideErrors] = useState("");
   const formik = useFormik({
     initialValues: {
       password: '',
       password_confirmation: '',
-      token: token || '', 
+      token: token || '',
     },
     validationSchema: resetPasswordSchema,
     onSubmit: async (values, { setStatus, setErrors }) => {
+      setServerSideErrors(""); 
       try {
         await onSubmit(values.password, values.password_confirmation, values.token);
         setStatus({ success: 'Password reset successfully!' });
       } catch (error) {
         setStatus({ error: error.message || 'An error occurred during password reset.' });
-        setErrors({ apiError: error.message || 'An error occurred' });
+        if (error.response?.status === 422) {
+          setServerSideErrors(error.response.data.errors); 
+        } else {
+          setErrors({ apiError: error.message || 'An error occurred' });
+        }
       }
     },
   });
@@ -24,6 +32,10 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <ServerSideValidationMessagesWrapper error={serverSideErrors} />
+        </Grid>
+
         {formik.status && formik.status.success && (
           <Grid item xs={12}>
             <Typography variant="h6" color="success.main">
@@ -38,6 +50,7 @@ const ResetPasswordForm = ({ onSubmit, token }) => {
             </Typography>
           </Grid>
         )}
+
         <Grid item xs={12}>
           <TextField
             fullWidth
