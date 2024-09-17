@@ -220,7 +220,7 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
                     <Grid item key={index}>
                       <IconButton onClick={() => handleViewImage(image)}>
                       <img 
-                      src={image} 
+                      src={image?.file_path ?? image } 
                       alt={`uploaded ${index}`} 
                       style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
                     />
