@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Container, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "features/Registeration/forms/RegisterForm";
@@ -6,8 +6,10 @@ import Swal from "sweetalert2";
 import ServerSideValidationMessagesWrapper from "components/ServerSideValidationMessagesWrapper";
 import axios from "api/axios";
 import Cookies from "js-cookie";
+import AuthContext from "context/AuthContext";
 
 const RegisterComponent = () => {
+  const { setAuth } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [serverSideErrors, setServerSideErrors] = useState("");
   const navigate = useNavigate();
@@ -21,6 +23,12 @@ const RegisterComponent = () => {
       Cookies.set("email", response.data.data.email);
       Cookies.set("role_id", response.data.data.role_id);
       Cookies.set("role_name", response.data.data.role_name);
+      setAuth({
+        token: response.data.data.token,
+        role_id: response.data.data.role_id,
+        role_name: response.data.data.role_name,
+        isAuth: true,
+      });
       Swal.fire({
         position: "top-end",
         icon: "success",

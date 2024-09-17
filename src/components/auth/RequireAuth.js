@@ -28,6 +28,7 @@ const RequireAuth = (props) => {
 
   useEffect(() => {
     if (!auth?.token || auth?.token === "") {
+      console.log("aa");
       navigate("/login");
     } else {
       isAllowed();
