@@ -43,6 +43,8 @@ const RegisterComponent = () => {
       if (error.response.status === 422) {
         setServerSideErrors(error.response.data.errors);
       }
+    }finally {
+      setSubmitting(false); 
     }
   };
 

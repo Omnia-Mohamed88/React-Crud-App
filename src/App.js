@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Create from "./features/Category/Page/Create";
-import Update from "./features/Category/Page/Update";
 import List from "./features/Category/Page/List";
 import Home from "./pages/Home";
 import ListProductPage from "./features/Product/pages/ListProductPage";
@@ -43,7 +42,7 @@ function App() {
 
                 <Route path="/categories" element={<List />} />
                 <Route path="/categories/create" element={<Create />} />
-                <Route path="/categories/update/:id" element={<Update />} />
+                {/* <Route path="/categories/update/:id" element={<Update />} /> */}
                 <Route path="/products" element={<ListProductPage />} />
                 <Route
                   path="/products/create"

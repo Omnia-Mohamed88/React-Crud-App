@@ -85,7 +85,8 @@ const RegisterForm = ({ onSubmit, error }) => {
             color="primary"
             fullWidth
             type="submit"
-            disabled={formik.isSubmitting}
+            // disabled={formik.isSubmitting}
+            disabled={formik.isSubmitting || !formik.isValid}
           >
             {formik.isSubmitting ? "Registering..." : "Register"}
           </Button>

@@ -23,42 +23,27 @@ const CategoryUpdate = ({ categoryId, onClose }) => {
     }, [categoryId, axiosPrivate]);
 
     const handleUpdateCategory = async (values) => {
-      try {
-          const formData = new FormData();
-          Object.keys(values).forEach(key => {
-              if (Array.isArray(values[key])) {
-                  values[key].forEach(item => {
-                      formData.append(`${key}[]`, item);
-                  });
-              } else {
-                  formData.append(key, values[key]);
-              }
-          });
-  
-          const payload = {
-              title: values.title,
-              attachments: {
-                  create: values.attachments.create || [],
-                  delete: values.attachments.delete || []
-              }
-          };
-  
-          console.log('Payload:', payload);
-  
-          await axiosPrivate.put(`/categories/${categoryId}`, payload, {
-              headers: { 'Content-Type': 'application/json' }
-          });
-          onClose();
-      } catch (error) {
-          console.error("Error updating category:", error);
-          if (error.response && error.response.data && error.response.data.errors) {
-              setServerErrors(error.response.data.errors);
-          } else {
-              setServerErrors({ general: 'Failed to update category. Please try again.' });
-          }
-      }
-  };
-  
+        try {
+            const payload = {
+                title: values.title,
+                attachments: {
+                    create: values.attachments.create || [],
+                    delete: values.attachments.delete || []
+                }
+            };
+
+            await axiosPrivate.put(`/categories/${categoryId}`, values, {
+            });
+            onClose();
+        } catch (error) {
+            console.error("Error updating category:", error);
+            if (error.response && error.response.data && error.response.data.errors) {
+                setServerErrors(error.response.data.errors);
+            } else {
+                setServerErrors({ general: 'Failed to update category. Please try again.' });
+            }
+        }
+    };
 
     return (
         <Modal open={true} onClose={onClose}>

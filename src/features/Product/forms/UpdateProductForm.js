@@ -218,7 +218,7 @@ const UpdateProductForm = ({ product, categories = [], onSubmit, serverErrors })
                   .filter((image) => !imagesToDelete.includes(image.id))
                   .map((image, index) => (
                     <Grid item key={index}>
-                      <IconButton onClick={() => handleViewImage(image)}>
+                      <IconButton onClick={() => handleViewImage(image.file_path)}>
                       <img 
                       src={image?.file_path ?? image } 
                       alt={`uploaded ${index}`} 

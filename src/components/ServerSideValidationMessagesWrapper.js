@@ -7,7 +7,8 @@ function ServerSideValidationMessagesWrapper({ error }) {
         <div id="error">
           {Object.keys(error).map((err, key) => (
             <Alert key={key} severity="error" style={{ whiteSpace: 'normal' }}>
-              {Array.isArray(error[err]) ? error[err][0] : error[err]}
+              {/* {Array.isArray(error[err]) ? error[err][0] : error[err]} */}
+              {error[err][0] }
             </Alert>
           ))}
         </div>

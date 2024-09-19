@@ -38,14 +38,15 @@ const CreateCategory = () => {
     const { status, data } = err.response;
   
     if (status === 400) {
-      setServerErrors(data.errors || { general: 'Bad request. Please check your input.' });
+      setServerErrors(data.errors);
+    } else if (status === 401) {  
+      setServerErrors({ message: data.message });  
     } else if (status === 422) {
-      setServerErrors(data.errors || { general: 'Validation errors occurred. Please correct them.' });
+      setServerErrors(data.errors);
     } else if (status === 500) {
-      setServerErrors({ general: 'A server error occurred. Please try again later.' });
-    } else {
-      setServerErrors({ general: 'Failed to create category. Please try again.' });
+      setServerErrors({ message: 'A server error occurred. Please try again later.' });
     }
+    
   } 
 }}
 
