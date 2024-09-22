@@ -2,6 +2,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import UseAuth from 'hooks/UseAuth';
+import { IconButton} from '@mui/material';
+import { Home as HomeIcon} from '@mui/icons-material';
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
@@ -32,6 +34,9 @@ const AdminNavbar = () => {
         <li style={styles.li}>
           <Link to="/products" style={styles.link}>Products</Link>
         </li>
+        <IconButton color="inherit" component={Link} to="/">
+        <HomeIcon sx={{ color: 'white' }} />
+        </IconButton>
         <li style={styles.li}>
           <button onClick={handleLogout} style={styles.button}>Logout</button>
         </li>
