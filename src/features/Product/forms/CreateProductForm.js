@@ -44,6 +44,8 @@ const CreateProductForm = ({ onSubmit, serverErrors }) => {
     if (files.length === 0) return;  
     
     const formData = new FormData();
+
+    formData.append('folder', 'products');
     files.forEach((file, index) => formData.append(`files[${index}]`, file));  
   
     try {

@@ -20,10 +20,13 @@ const CreateCategoryForm = ({ onSubmit, serverErrors }) => {
 
   const handleImageUpload = async (event, setFieldValue) => {
     const files = Array.from(event.target.files);
-  
+    const formData = new FormData(); 
+
+    formData.append('folder', 'categories');
+
     if (files.length === 0) return;
     
-    const formData = new FormData();
+    // const formData = new FormData();
     files.forEach((file, index) => formData.append(`files[${index}]`, file));
     
     try {
